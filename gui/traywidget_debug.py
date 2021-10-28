@@ -12,13 +12,15 @@ def test_action_clicked():
 
 app = QApplication([])
 app.setQuitOnLastWindowClosed(False)
-icon = QIcon("debug_icon.jpg")
+icon = QIcon("pics/bergli_circle.png")
 
 tray = QSystemTrayIcon()
 tray.setIcon(icon)
 tray.setVisible(True)
 
 menu = QMenu()
+
+"""
 add_action = QAction("Barfoobaz")
 menu.addAction(add_action)
 
@@ -26,10 +28,12 @@ test_action = QAction("Foobarbaz")
 test_action.triggered.connect(test_action_clicked)
 menu.addAction(test_action)
 menu.addSeparator()
+"""
 
 widget = QWidget()
 
-layout = QHBoxLayout()
+
+layout = QVBoxLayout()
 innerLayout = QGridLayout()
 
 innerLayout.setSpacing(2)
@@ -43,7 +47,7 @@ innerLayout.addWidget(QLabel("healthy"), 2, 1)
 innerLayout.addWidget(QPushButton("Touch Me!"), 3, 0)
 innerLayout.addWidget(QLineEdit("Write on Me"), 3, 1)
 innerLayout.addWidget(QLabel("OCIO"), 4, 0)
-innerLayout.addWidget(QSlider(), 4, 1)
+innerLayout.addWidget(QCheckBox(), 4, 1)
 
 layout.addLayout(innerLayout)
 
@@ -70,5 +74,7 @@ action.triggered.connect(quit_action_clicked)
 menu.addAction(action)
 
 tray.setContextMenu(menu)
+
+app.setStyleSheet(open("style/hslu_animation.css").read())
 
 app.exec_()

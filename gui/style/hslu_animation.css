@@ -1,0 +1,165 @@
+QWidget {
+  font-size: 12px;
+}
+
+QTableView {
+  font-size: 10px;
+  alternate-background-color: #eeeeff;
+}
+
+QWidget {
+  /* border: 3px solid black;
+  border-radius: 6px; */
+  background-color: rgb(162, 206, 217);
+}
+
+QMenu {
+  border: 3px solid black;
+  border-radius: 6px;
+  background-color: rgb(162, 206, 217);
+}
+
+QPushButton {
+  font-size: 16px;
+  min-width: 10px;
+
+  border: 2px solid black;
+  border-radius: 4px;
+  background-color: rgb(37, 137, 194);
+}
+
+QPushButton:hover {
+  background-color: rgb(162, 206, 217);
+}
+QPushButton:pressed {
+  background-color: rgb(82, 126, 178);
+}
+
+ColorButton:enabled {
+  border: 1px solid #28dfdf;
+}
+
+ColorButton:disabled {
+  border: 1px solid #aaaaaa;
+}
+
+QLineEdit {
+  font-size: 14px;
+  color: grey;
+  min-width: 10px;
+
+  border: 2px solid black;
+  border-radius: 4px;
+  background-color: rgb(255, 255, 255);
+}
+
+QComboBox {
+  font-size: 14px;
+  color: grey;
+  min-width: 10px;
+
+  border: 2px solid black;
+  border-radius: 4px;
+  background-color: rgb(255, 255, 255);
+}
+
+QComboBox::drop-down {
+  border: 0px; /* This seems to replace the whole arrow of the combo box */
+}
+
+QTabWidget::pane {
+  border: 1px solid black;
+  background: rgb(196, 232, 241);
+}
+
+QTabWidget::tab-bar:top {
+  top: 1px;
+}
+
+QTabWidget::tab-bar:bottom {
+  bottom: 1px;
+}
+
+QTabWidget::tab-bar:left {
+  right: 1px;
+}
+
+QTabWidget::tab-bar:right {
+  left: 1px;
+}
+
+QTabBar::tab {
+  border: 1px solid black;
+}
+
+QTabBar::tab:selected {
+  background: rgb(196, 232, 241);
+}
+
+/* QTabBar::tab:!selected {
+  background: rgb(219, 240, 245);
+}
+
+QTabBar::tab:!selected:hover {
+  background: rgb(162, 206, 217);
+}
+
+QTabBar::tab:top:!selected {
+  margin-top: 3px;
+}
+
+QTabBar::tab:bottom:!selected {
+  margin-bottom: 3px;
+} */
+
+QTabBar::tab:top,
+QTabBar::tab:bottom {
+  min-width: 8ex;
+  margin-right: -1px;
+  padding: 5px 10px 5px 10px;
+}
+
+QTabBar::tab:top:selected {
+  border-bottom-color: none;
+}
+
+QTabBar::tab:bottom:selected {
+  border-top-color: none;
+}
+
+QTabBar::tab:top:last,
+QTabBar::tab:bottom:last,
+QTabBar::tab:top:only-one,
+QTabBar::tab:bottom:only-one {
+  margin-right: 0;
+}
+
+/* QTabBar::tab:left:!selected {
+  margin-right: 3px;
+}
+
+QTabBar::tab:right:!selected {
+  margin-left: 3px;
+} */
+
+QTabBar::tab:left,
+QTabBar::tab:right {
+  min-height: 8ex;
+  margin-bottom: -1px;
+  padding: 10px 5px 10px 5px;
+}
+
+QTabBar::tab:left:selected {
+  border-left-color: none;
+}
+
+QTabBar::tab:right:selected {
+  border-right-color: none;
+}
+
+QTabBar::tab:left:last,
+QTabBar::tab:right:last,
+QTabBar::tab:left:only-one,
+QTabBar::tab:right:only-one {
+  margin-bottom: 0;
+}
