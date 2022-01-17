@@ -1,5 +1,7 @@
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import *
+import os
+import sys
 
 
 def quit_action_clicked():
@@ -10,9 +12,17 @@ def test_action_clicked():
     pass
 
 
+def print_turd_clicked():
+    print("Turd")
+
+
 app = QApplication([])
 app.setQuitOnLastWindowClosed(False)
-icon = QIcon("pics/bergli_circle.png")
+
+file_path = os.path.dirname(os.path.realpath(__file__))
+css_path = os.path.join(file_path, "style/hslu_animation.css")
+icon_path = os.path.join(file_path, "pics/bergli_circle.png")
+icon = QIcon(icon_path)
 
 tray = QSystemTrayIcon()
 tray.setIcon(icon)
@@ -67,14 +77,17 @@ berAction.setDefaultWidget(widget)
 menu.addAction(berAction)
 menu.addSeparator()
 
-
+print_turd = QAction("Print Turd")
+print_turd.triggered.connect(print_turd_clicked)
 action = QAction("Quit")
 action.triggered.connect(quit_action_clicked)
 
+menu.addAction(print_turd)
 menu.addAction(action)
 
 tray.setContextMenu(menu)
 
-app.setStyleSheet(open("style/hslu_animation.css").read())
+
+app.setStyleSheet(open(css_path).read())
 
 app.exec_()
