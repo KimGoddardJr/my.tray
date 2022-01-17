@@ -1,3 +1,4 @@
+from PySide2 import QtCore
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import *
 import os
@@ -22,13 +23,13 @@ app.setQuitOnLastWindowClosed(False)
 file_path = os.path.dirname(os.path.realpath(__file__))
 css_path = os.path.join(file_path, "style/hslu_animation.css")
 icon_path = os.path.join(file_path, "pics/bergli_circle.png")
+
 icon = QIcon(icon_path)
 
 tray = QSystemTrayIcon()
 tray.setIcon(icon)
 tray.setVisible(True)
 
-menu = QMenu()
 
 """
 add_action = QAction("Barfoobaz")
@@ -71,10 +72,24 @@ layout.setSpacing(0)
 
 widget.setLayout(layout)
 
-berAction = QWidgetAction(menu)
-berAction.setDefaultWidget(widget)
+labeltest = QLabel("MOTHERFUCKER")
 
-menu.addAction(berAction)
+menu = QMenu()
+submenu = QMenu("Submenu")
+# submenu = QMenuBar(menu)
+styledMenu = QWidgetAction(menu)
+# styledMenu.createWidget(labeltest)
+otherone = QWidgetAction(menu)
+styledMenu.setDefaultWidget(widget)
+
+# menu.addAction(styledMenu)
+submenu.addAction(styledMenu)
+# menu.addMenu("submenu")
+# add submenu to menu
+menu.addMenu(submenu)
+# menu.addAction()
+
+
 menu.addSeparator()
 
 print_turd = QAction("Print Turd")
@@ -84,9 +99,9 @@ action.triggered.connect(quit_action_clicked)
 
 menu.addAction(print_turd)
 menu.addAction(action)
-
+menu.setStyle(QStyleFactory.create("Fusion"))
 tray.setContextMenu(menu)
-
+menu.show()
 
 app.setStyleSheet(open(css_path).read())
 
