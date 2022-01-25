@@ -27,11 +27,12 @@ class PatxiMenu(QMenu):
             cat_menu.setIcon(iconFromBase64(self.icons[category].encode()))
 
             for name, app in sorted(apps.items()):
+                print(name)
                 soft_ico = iconFromBase64(app["icon"].encode())
-                action = QAction(soft_ico, name)
+                action = QAction(soft_ico, name, self)
                 action.triggered.connect(lambda: self.RunLauncher(app["launcher"]))
-
                 cat_menu.addAction(action)
+                # cat_menu.addAction(soft_ico, name).triggered.connect(lambda: self.RunLauncher(app["launcher"]))
 
             self.addMenu(cat_menu)
 
