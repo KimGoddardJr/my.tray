@@ -24,25 +24,28 @@ class PatxiMenu(QMenu):
 
         for category, apps in sorted(self.applications.items()):
             cat_menu = QMenu(category.upper())
-            cat_menu.setIcon(iconFromBase64(self.icons[category]))
-            self.addMenu(cat_menu)
+            cat_menu.setIcon(iconFromBase64(self.icons[category].encode()))
 
             for name, app in sorted(apps.items()):
-                soft_ico = iconFromBase64(app["icon"])
+                soft_ico = iconFromBase64(app["icon"].encode())
                 action = QAction(soft_ico, name)
-                action.triggered.connect(self.RunLauncher(app["launch"]))
+                action.triggered.connect(lambda: self.RunLauncher(app["launcher"]))
 
-    def Sections(self):
+                cat_menu.addAction(action)
+
+            self.addMenu(cat_menu)
+
+    def Parser(self):
         glob_pattern = os.path.join(self.software_files, "*")
         software_files = sorted(glob(glob_pattern))
         parser = configparser.ConfigParser()
         parser.read(software_files)
 
-        return parser.sections()
+        return parser
 
     def DictOfParse(self):
-        parser = self.Sections()
-        for section_name in parser:
+        parser = self.Parser()
+        for section_name in parser.sections():
             category = parser.get(section_name, "family")
             family = parser.get(section_name, "family")
 
