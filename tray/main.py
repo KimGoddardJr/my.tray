@@ -34,8 +34,10 @@ def main():
     menu = PatxiMenu(software_files)
     menu.BuildMenu()
 
-    state_ico, ocio_state = CheckOCIOState()
-    OCIO = QAction(state_ico,ocio_state, checkable=True)
+    OCIO = QAction(checkable=True)
+    state_ico, ocio_state = CheckOCIOState(OCIO)
+    OCIO.setIcon(state_ico)
+    OCIO.setText(ocio_state)
     OCIO.triggered.connect(lambda: ToggleIconAction(OCIO))
 
     menu.addAction(OCIO)
