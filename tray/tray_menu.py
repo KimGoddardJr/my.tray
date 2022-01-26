@@ -4,6 +4,7 @@ from PySide2.QtWidgets import *
 import os
 import sys
 import re
+from functools import partial
 import configparser
 from glob import glob
 import subprocess
@@ -19,6 +20,7 @@ class PatxiMenu(QMenu):
         self.applications = {}
         self.icons = {}
         self.DictOfParse()
+        self.action_dict = {}
 
     def BuildMenu(self):
 
@@ -30,11 +32,13 @@ class PatxiMenu(QMenu):
                 print(name)
                 soft_ico = iconFromBase64(app["icon"].encode())
                 action = QAction(soft_ico, name, self)
-                action.triggered.connect(lambda: self.RunLauncher(app["launcher"]))
+                action.triggered.connect(partial(self.RunLauncher,app["launcher"]))
                 cat_menu.addAction(action)
+                self.action_dict[name] = (action, app["launcher"])
                 # cat_menu.addAction(soft_ico, name).triggered.connect(lambda: self.RunLauncher(app["launcher"]))
-
             self.addMenu(cat_menu)
+        
+
 
     def Parser(self):
         glob_pattern = os.path.join(self.software_files, "*")
@@ -65,6 +69,10 @@ class PatxiMenu(QMenu):
                     name == "icon" and self.icons[category] == ""
                 ):
                     self.icons[category] = value
+
+    def TriggerLauncher(self,app_name):
+        action,launcher = self.action_dict[app_name]
+        action.triggered.connect(lambda: self.RunLauncher(launcher))
 
     def RunLauncher(self, launch_cmd):
         subprocess.run([launch_cmd])

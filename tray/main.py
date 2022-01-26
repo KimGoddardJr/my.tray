@@ -34,6 +34,9 @@ def main():
     menu = PatxiMenu(software_files)
     menu.BuildMenu()
 
+    # menu.action_dict["BLENDER BUILD"][0].triggered.connect(lambda: print(menu.action_dict["BLENDER BUILD"][1]))
+    
+
     OCIO = QAction(checkable=True)
     state_ico, ocio_state = CheckOCIOState(OCIO)
     OCIO.setIcon(state_ico)
