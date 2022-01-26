@@ -75,4 +75,4 @@ class PatxiMenu(QMenu):
         action.triggered.connect(lambda: self.RunLauncher(launcher))
 
     def RunLauncher(self, launch_cmd):
-        subprocess.run([launch_cmd])
+        subprocess.Popen([launch_cmd])
