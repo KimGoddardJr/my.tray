@@ -8,6 +8,7 @@ from functools import partial
 import configparser
 from glob import glob
 import subprocess
+import platform
 
 from img_utils import *
 from draw_items import *
@@ -16,6 +17,8 @@ from draw_items import *
 class PatxiMenu(QMenu):
     def __init__(self, software_files: str, parent=None):
         super(PatxiMenu, self).__init__(parent)
+        home = os.path.expanduser('~')
+        self.launchers = os.path.join(home,"devel","launchers")
         self.software_files = software_files
         self.applications = {}
         self.icons = {}
@@ -32,7 +35,9 @@ class PatxiMenu(QMenu):
                 print(name)
                 soft_ico = iconFromBase64(app["icon"].encode())
                 action = QAction(soft_ico, name, self)
-                action.triggered.connect(partial(self.RunLauncher,app["launcher"]))
+                init_launcher = os.path.join(self.launchers,app["launcher"])
+                param = f"{app['param1']}"
+                action.triggered.connect(partial(self.RunLauncher,init_launcher,param))
                 cat_menu.addAction(action)
                 self.action_dict[name] = (action, app["launcher"])
                 # cat_menu.addAction(soft_ico, name).triggered.connect(lambda: self.RunLauncher(app["launcher"]))
@@ -74,5 +79,11 @@ class PatxiMenu(QMenu):
         action,launcher = self.action_dict[app_name]
         action.triggered.connect(lambda: self.RunLauncher(launcher))
 
-    def RunLauncher(self, launch_cmd):
-        subprocess.Popen([launch_cmd])
+    def RunLauncher(self, launch_cmd, param):
+        print(launch_cmd)
+        if platform.system() == "Windows":
+            print(launch_cmd)
+            print(param)
+            subprocess.Popen(["powershell.exe",launch_cmd,param])
+        else:
+            subprocess.Popen([launch_cmd,param])

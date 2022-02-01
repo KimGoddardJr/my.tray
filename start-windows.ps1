@@ -1,5 +1,6 @@
-$SCRIPT_PATH = Get-Location
+$SCRIPT_PATH = "C:\Users\paxig\devel\my.tray"
 
 conda activate vfxpipeline
 
-python "${SCRIPT_PATH}/tray/main.py"
+pythonw "${SCRIPT_PATH}\tray\main.py" 
+
