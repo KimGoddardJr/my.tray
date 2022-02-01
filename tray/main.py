@@ -8,11 +8,9 @@ import sys
 import getpass
 import json
 
-from actions import *
 from img_utils import *
 from tray_menu import *
 from draw_items import juche,bergli
-from states import CheckOCIOState
 
 
 def main():
@@ -35,17 +33,6 @@ def main():
     menu.BuildMenu()
 
     # menu.action_dict["BLENDER BUILD"][0].triggered.connect(lambda: print(menu.action_dict["BLENDER BUILD"][1]))
-    
-
-    OCIO = QAction(checkable=True)
-    state_ico, ocio_state = CheckOCIOState(OCIO)
-    OCIO.setIcon(state_ico)
-    OCIO.setText(ocio_state)
-    OCIO.triggered.connect(lambda: ToggleIconAction(OCIO))
-
-    menu.addAction(OCIO)
-
-    menu.addAction("Quit").triggered.connect(sys.exit)
 
     tray.setContextMenu(menu)
 

@@ -10,6 +10,8 @@ from glob import glob
 import subprocess
 import platform
 
+from actions import *
+from states import CheckOCIOState
 from img_utils import *
 from draw_items import *
 
@@ -42,9 +44,13 @@ class PatxiMenu(QMenu):
                 self.action_dict[name] = (action, app["launcher"])
                 # cat_menu.addAction(soft_ico, name).triggered.connect(lambda: self.RunLauncher(app["launcher"]))
             self.addMenu(cat_menu)
+
+        self.AdditionalActions()
+    
+    def RebuildMenu(self):
+        self.clear()
+        self.BuildMenu()
         
-
-
     def Parser(self):
         glob_pattern = os.path.join(self.software_files, "*")
         software_files = sorted(glob(glob_pattern))
@@ -87,3 +93,20 @@ class PatxiMenu(QMenu):
             subprocess.Popen(["powershell.exe",launch_cmd,param])
         else:
             subprocess.Popen([launch_cmd,param])
+    
+    def AdditionalActions(self):
+
+        OCIO = QAction(checkable=True)
+        state_ico, ocio_state = CheckOCIOState(OCIO)
+        OCIO.setIcon(state_ico)
+        OCIO.setText(ocio_state)
+        OCIO.triggered.connect(lambda: ToggleIconAction(OCIO))
+
+        self.addAction(OCIO)
+
+        std_refresh_pixmap = getattr(QStyle,'SP_BrowserReload')  
+        refresh_ico = QWidget().style().standardIcon(std_refresh_pixmap)
+        REFRESH = QAction(refresh_ico,"Refresh",self)
+        REFRESH.triggered.connect(lambda: self.RebuildMenu())
+
+        self.addAction(REFRESH)
