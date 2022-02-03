@@ -1,3 +1,4 @@
-pip:
-    PySide2
-    darkdetect
+PySide2
+darkdetect
+requests
+gazu

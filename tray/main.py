@@ -10,11 +10,11 @@ import json
 
 from img_utils import *
 from tray_menu import *
-from draw_items import juche,bergli
+from draw_items import juche, bergli
 
 
 def main():
-    work_user = ["hslu","admin"]
+    work_user = ["hslu", "admin"]
     app = QApplication(sys.argv)
 
     if getpass.getuser() in work_user:
@@ -23,7 +23,7 @@ def main():
         m_ico = juche()
 
     cur_path = os.path.dirname(os.path.realpath(__file__))
-    software_files = os.path.join(cur_path,"..","..","launcher.files")
+    software_files = os.path.join(cur_path, "..", "..", "launcher.files")
 
     tray = QSystemTrayIcon()
     tray.setIcon(m_ico)
