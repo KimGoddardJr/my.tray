@@ -2,7 +2,7 @@
 
 # eval "$(conda shell.bash hook)"
 
-source $HOME/anaconda3/bin/activate base
+source $HOME/anaconda3/bin/activate vfxpipeline
 
 # export XDG_SESSION_TYPE=wayland
 # export QT_QPA_PLATFORM=wayland
