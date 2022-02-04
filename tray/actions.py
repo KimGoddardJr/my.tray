@@ -1,5 +1,10 @@
-from PySide2 import QtGui
-from PySide2.QtWidgets import *
+try:
+    from PySide2 import QtGui
+    from PySide2.QtWidgets import *
+except:
+    from PyQt5 import QtGui
+    from PyQt5.QtWidgets import *
+    
 from widgets import *
 from states import *
 

@@ -1,4 +1,7 @@
-from PySide2.QtWidgets import *
+try:
+    from PySide2.QtWidgets import *
+except:
+    from PyQt5.QtWidgets import *
 import json
 import os
 from widgets import *

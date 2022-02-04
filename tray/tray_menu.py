@@ -1,6 +1,12 @@
-from PySide2 import QtCore, QtGui
-from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import *
+try:
+    from PySide2 import QtCore, QtGui
+    from PySide2.QtGui import QIcon
+    from PySide2.QtWidgets import *
+except:
+    from PyQt5 import QtCore, QtGui
+    from PyQt5.QtGui import QIcon
+    from PyQt5.QtWidgets import *
+
 import os
 import sys
 import re
@@ -35,11 +41,11 @@ class PatxiMenu(QMenu):
         self.addSeparator()
 
         for category, apps in sorted(self.applications.items()):
-            cat_menu = QMenu(category.upper())
+            cat_menu = QMenu(category.upper(),self)
             cat_menu.setIcon(iconFromBase64(self.icons[category].encode()))
 
             for name, app in sorted(apps.items()):
-                # print(name)
+                print(name)
                 soft_ico = iconFromBase64(app["icon"].encode())
                 action = QAction(soft_ico, name, self)
                 init_launcher = os.path.join(self.launchers, app["launcher"])
