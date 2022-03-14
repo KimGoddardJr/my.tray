@@ -27,6 +27,7 @@ class PatxiMenu(QMenu):
         super(PatxiMenu, self).__init__(parent)
         home = os.path.expanduser("~")
         self.project = None
+        # temporary PATH for launchers. Needds to be made userdefinable
         self.launchers = os.path.join(home, "devel", "launchers")
         self.software_files = software_files
         self.applications = {}
