@@ -50,16 +50,22 @@ class PatxiMenu(QMenu):
                 soft_ico = iconFromBase64(app["icon"].encode())
                 action = QAction(soft_ico, name, self)
 
+                exec_cmds = []
                 if platform.system() == "Windows":
                     init_launcher = os.path.join(self.launchers,"windows", app["launcher"])
                     init_launcher += ".ps1"
+                    exec_cmds.append("powershell.exe")
+                    exec_cmds.append(init_launcher)
                 else:
                     init_launcher = os.path.join(self.launchers,"unix", app["launcher"])
                     init_launcher += ".sh"
+                    exec_cmds.append(init_launcher)
 
                 param = f"{app['param1']}"
+                exec_cmds.append(param)
+
                 action.triggered.connect(
-                    partial(self.RunLauncher, init_launcher, param)
+                    partial(self.RunLauncher, exec_cmds)
                 )
                 cat_menu.addAction(action)
                 self.action_dict[name] = (action, app["launcher"])
@@ -108,13 +114,8 @@ class PatxiMenu(QMenu):
         action, launcher = self.action_dict[app_name]
         action.triggered.connect(lambda: self.RunLauncher(launcher))
 
-    def RunLauncher(self, launch_cmd, param):
-        if platform.system() == "Windows":
-            # print(launch_cmd)
-            # print(param)
-            subprocess.Popen(["powershell.exe", launch_cmd, param])
-        else:
-            subprocess.Popen([launch_cmd, param])
+    def RunLauncher(self, exec_cmds):
+        subprocess.Popen(exec_cmds)
 
     def CurProject(self):
         PROJECT = QAction(self)
