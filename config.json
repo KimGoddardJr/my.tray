@@ -1,34 +1,151 @@
 {
     "Windows" : {
 
-        "IA-Space" : [],
-        "IA-Space-User" : [],
-        "HSLU" : [],
-        "HSLU-User" : [],
-        "Windows-Workstation" : [],
-        "Windows-Portable" : []
+        "IA-Space" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "bridge" : []
+        },
+        "IA-Space-User" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "HSLU" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "HSLU-User" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "Windows-Workstation" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "Windows-Portable" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        }
 
     },
 
     "Linux" : {
 
-        "IA-Space" : [],
-        "IA-Space-User" : [],
-        "HSLU" : [],
-        "HSLU-User" : [],
-        "Linux-Workstation" : [],
-        "Linux-Portable" : []
+        "IA-Space" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "bridge" : []
+        },
+        "IA-Space-User" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "HSLU" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "HSLU-User" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "Linux-Workstation" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "Linux-Portable" : {
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["19.0"]
+        }
 
     },
 
     "Darwin" : {
 
-        "IA-Space" : [],
-        "IA-Space-User" : [],
-        "HSLU" : [],
-        "HSLU-User" : [],
-        "Mac-Workstation" : [],
-        "Mac-Portable" : []
+        "IA-Space" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "IA-Space-User" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "HSLU" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "HSLU-User" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "Mac-Workstation" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        },
+        "Mac-Portable" : {
+            "maya" : ["2020","2022"],
+            "blender" : ["3.0","3.1"],
+            "houdini" : ["18.5","19.0"],
+            "nuke" : ["12.2.6","13.1"],
+            "substance" : [],
+            "bridge" : []
+        }
 
     }
 
