@@ -103,11 +103,15 @@ class PatxiMenu(QMenu):
     def RunLauncher(self, launch_cmd, param):
         print(launch_cmd)
         if platform.system() == "Windows":
-            print(launch_cmd)
-            print(param)
-            subprocess.Popen(["powershell.exe", launch_cmd, param])
+            param_p = os.path.join("windows",param)
+            param_p += ".ps1"
+            # print(launch_cmd)
+            # print(param)
+            subprocess.Popen(["powershell.exe", launch_cmd, param_p])
         else:
-            subprocess.Popen([launch_cmd, param])
+            param_p = os.path.join("unix",param)
+            param_p += ".sh"
+            subprocess.Popen([launch_cmd, param_p])
 
     def CurProject(self):
         PROJECT = QAction(self)
