@@ -1,0 +1,37 @@
+{
+    "Windows" : {
+
+        "IA-Space" : [],
+        "IA-Space-User" : [],
+        "HSLU" : [],
+        "HSLU-User" : [],
+        "Windows-Workstation" : [],
+        "Windows-Portable" : []
+
+    },
+
+    "Linux" : {
+
+        "IA-Space" : [],
+        "IA-Space-User" : [],
+        "HSLU" : [],
+        "HSLU-User" : [],
+        "Linux-Workstation" : [],
+        "Linux-Portable" : []
+
+    },
+
+    "Darwin" : {
+
+        "IA-Space" : [],
+        "IA-Space-User" : [],
+        "HSLU" : [],
+        "HSLU-User" : [],
+        "Mac-Workstation" : [],
+        "Mac-Portable" : []
+
+    }
+
+
+
+}
