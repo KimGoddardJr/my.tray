@@ -2,17 +2,19 @@
     "Windows" : {
 
         "IA-Space" : {
-            "maya" : ["2020","2022"],
+            "maya" : ["2019","2020","2022"],
             "blender" : ["3.0","3.1"],
             "houdini" : ["18.5","19.0"],
-            "bridge" : []
+            "bridge" : [],
+            "wrap" : []
         },
         "IA-Space-User" : {
-            "maya" : ["2020","2022"],
+            "maya" : ["2019","2020","2022"],
             "blender" : ["3.0","3.1"],
             "houdini" : ["18.5","19.0"],
             "substance" : [],
-            "bridge" : []
+            "bridge" : [],
+            "wrap" : []
         },
         "HSLU" : {
             "maya" : ["2020","2022"],
