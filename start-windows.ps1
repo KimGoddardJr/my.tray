@@ -4,5 +4,5 @@ conda activate vfxpipeline
 
 $env:ENV_LAUNCHERS="${BASE}\my.launchers"
 
-python "${BASE}\my.tray\tray\main.py" 
+pythonw "${BASE}\my.tray\tray\main.py" 
 
