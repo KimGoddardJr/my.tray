@@ -140,9 +140,15 @@ class PatxiMenu(QMenu):
         self.addAction(OCIO)
 
         std_refresh_pixmap = getattr(QStyle, "SP_BrowserReload")
+        std_exit_pixmap = getattr(QStyle,"SP_DialogCloseButton")
         refresh_ico = QWidget().style().standardIcon(std_refresh_pixmap)
+        exit_ico = QWidget().style().standardIcon(std_exit_pixmap)
         REFRESH = QAction(refresh_ico, "Refresh", self)
         REFRESH.triggered.connect(lambda: self.RebuildMenu("REBUILDING"))
 
+        LEAVE = QAction(exit_ico,"Exit",self)
+        LEAVE.triggered.connect(sys.exit)
+
         self.addAction(REFRESH)
+        self.addAction(LEAVE)
 

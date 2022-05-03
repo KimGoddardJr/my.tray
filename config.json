@@ -139,10 +139,14 @@
             "bridge" : []
         },
         "Mac-Portable" : {
-            "maya" : ["2020","2022"],
-            "blender" : ["3.0","3.1"],
-            "houdini" : ["18.5","19.0"],
-            "nuke" : ["12.2.6","13.1.0"],
+            "maya" : [],
+            "blender" : ["3.1","BUILD"],
+            "houdini" : ["19.0"],
+            "godot" : ["3.5"],
+            "unreal": ["5.0"],
+            "nuke" : ["13.2"],
+            "krita":["5.0"],
+            "conda-env":["vfxpipeline"],
             "substance" : [],
             "bridge" : []
         }

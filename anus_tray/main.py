@@ -36,11 +36,11 @@ def main():
 
     menu = PatxiMenu(software_files)
     menu.BuildMenu()
-
+    # menu.addAction(sys.exit(app.exec_()))
     # menu.action_dict["BLENDER BUILD"][0].triggered.connect(lambda: print(menu.action_dict["BLENDER BUILD"][1]))
 
     tray.setContextMenu(menu)
-
+    
     # menu.show()
     tray.show()
     sys.exit(app.exec_())
