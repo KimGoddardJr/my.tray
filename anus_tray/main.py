@@ -16,6 +16,7 @@ import json
 from img_utils import *
 from tray_menu import *
 from draw_items import juche, bergli
+import settings as anus_settings
 
 
 def main():

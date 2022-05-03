@@ -4,12 +4,8 @@ except:
     from PyQt5.QtWidgets import *
 import json
 import os
+import settings as anus_settings
 from widgets import *
-
-def settings_path():
-    cur_path = os.path.dirname(os.path.realpath(__file__))
-    cfg_path = os.path.join(cur_path,"..","settings.json")
-    return cfg_path
 
 
 def settings(cfg_path: str):
@@ -18,7 +14,7 @@ def settings(cfg_path: str):
 
 def CheckOCIOState(action: QAction):
     on,off = Switches()
-    OCIO_STATE = settings(settings_path())["OCIO"]
+    OCIO_STATE = settings(anus_settings.SETTINGS)["OCIO"]
     if OCIO_STATE:
         action.setChecked(True)
         return on,"OCIO on"
@@ -27,10 +23,10 @@ def CheckOCIOState(action: QAction):
         return off,"OCIO off"
 
 def ChangeOCIOState(OCIO_STATE: bool):
-    settings_dict = settings(settings_path())
+    settings_dict = settings(anus_settings.SETTINGS)
     if OCIO_STATE:
         settings_dict["OCIO"] = True
     else:
         settings_dict["OCIO"] = False
-    with open(settings_path(), "w") as f:
+    with open(anus_settings.SETTINGS, "w") as f:
         json.dump(settings_dict, f)
