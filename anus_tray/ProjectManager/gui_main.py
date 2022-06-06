@@ -1,5 +1,5 @@
 from sqlite3 import dbapi2
-import hou
+# import hou
 import sys
 import os
 import platform
@@ -10,29 +10,29 @@ from PySide2 import QtGui, QtWidgets, QtCore, QtSvg
 from collections import OrderedDict
 import json
 
-from .submitter import Spool
+# from submitter import Spool
 from time import sleep
 
 from errno import ESRCH
 
 
-from .hslu_util_methods import (
+from Utils.makers import (
     CreationMethods,
     NumberMethods,
     ExecuteMethods,
 )
-from .db_methods import MethodsDB, ProjectInfoRetriever
-from .gui_methods import (
+from db_methods import MethodsDB, ProjectInfoRetriever
+from gui_methods import (
     BooleanMethods,
     DrawingMethods,
     DropListObjectInfo,
     GuiInfoMethods,
     StylingMethods,
 )
-from .gui_objects import cuDropList, DropListItemLayout
+from gui_objects import cuDropList, DropListItemLayout
 
 # from .houdini_methods import TopManagingMethods, ExportTypes
-from .submission_methods import HoudiniSubmissionMethods
+from submission_methods import HoudiniSubmissionMethods
 
 # from .hou_buttons import *
 

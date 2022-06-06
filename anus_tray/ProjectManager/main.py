@@ -1,5 +1,5 @@
 from PySide2 import QtCore
-from .gui_main import MainWindow
+from gui_main import MainWindow
 
 
 def go():

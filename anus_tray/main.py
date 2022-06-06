@@ -4,7 +4,7 @@ try:
     from PySide2 import QtCore, QtGui
     from PySide2.QtGui import QIcon
     from PySide2.QtWidgets import *
-except:
+except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtGui import QIcon
     from PyQt5.QtWidgets import *
