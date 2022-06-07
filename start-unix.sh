@@ -14,18 +14,20 @@
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+${SCRIPT_PATH}/../my.launchers/unix/anus_tray.sh
+
 # ECOSYSTEM_ENV
 
 
 # LAUNCHERS
-export LAUNCHER_FILES="${SCRIPT_PATH}/../launcher.files"
-export LAUNCHERS="${SCRIPT_PATH}/../launchers/unix"
+# export LAUNCHER_FILES="${SCRIPT_PATH}/../launcher.files"
+# export LAUNCHERS="${SCRIPT_PATH}/../launchers/unix"
 
-# APPS
-export ANUS_PROJECT_MANAGER=$SCRIPT_PATH/anus_tray/project_manager
-export ANUS_PROJECT_MEMORY=$HOME/.anus/project_history.txt
+# # APPS
+# export ANUS_PROJECT_MANAGER=$SCRIPT_PATH/anus_tray/project_manager
+# export ANUS_PROJECT_MEMORY=$HOME/.anus/project_history.txt
 
-export ANUS_PROJECT_SETUP=$SCRIPT_PATH/../my.project-setup
+# export ANUS_PROJECT_SETUP=$SCRIPT_PATH/../my.project-setup
 
 
-python "${SCRIPT_PATH}/anus_tray/main.py"
+# python "${SCRIPT_PATH}/anus_tray/main.py"

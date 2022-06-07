@@ -127,8 +127,7 @@ class AnusMenu(QMenu):
             self.PROJECT.setFont(QtGui.QFont("Comic Sans MS", 10, QtGui.QFont.Bold))
 
         self.addAction(self.PROJECT)
-
-        self.PROJECT.triggered.connect(lambda: trigger_app("ANUS_PROJECT_MANAGER"))
+        self.PROJECT.triggered.connect(lambda: self.RunLauncher([os.getenv("ANUS_PM_LAUNCHER")]))
 
     def AdditionalActions(self):
 
