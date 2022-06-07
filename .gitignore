@@ -1,3 +1,5 @@
 *.pyc
 __pycache__
 settings.json
+*.log
+.DS_Store
