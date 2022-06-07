@@ -92,8 +92,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
 # Creates the dialog box
 class ProjectWindow(QtWidgets.QWidget):
-    def __init__(self):
-        super(ProjectWindow, self).__init__()
+    def __init__(self,*args,**kwargs):
+        super(ProjectWindow, self).__init__(*args,**kwargs)
         self.home = os.path.expanduser("")
 
         ###### Initiate DB Class #######
@@ -241,7 +241,9 @@ class ProjectWindow(QtWidgets.QWidget):
         self.projectbox.addWidget(self.ProjectList)
 
         #### DRAW PROJECTBOX ####
+        ## DRAW THE MENU ##
         self.menubox.addLayout(self.projectbox)
+        self.menubox.addLayout(self.splashbox)
         self.menuwidget.setLayout(self.menubox)
 
         #############      ###############
@@ -271,8 +273,7 @@ class ProjectWindow(QtWidgets.QWidget):
             lambda: self.SequenceChildSelected(self.ProjectList.currentItem())
         )
 
-        ## DRAW THE MENU ##
-        self.menubox.addLayout(self.splashbox)
+        self.setLayout(self.widget_box)
 
 
     def InitProject(self):
