@@ -7,10 +7,12 @@ from gui_main import MainWindow,dpiCheck
 import os
 import platform
 
-
-def go():
+def qt_fix():
     if platform.system() == "Darwin":
         os.environ['QT_MAC_WANTS_LAYER'] = '1'
+
+def go():
+    qt_fix()
         
     app = QtWidgets.QApplication(sys.argv)
     dpiCheck()

@@ -20,6 +20,7 @@ from actions import *
 from states import CheckOCIOState
 from img_utils import *
 from draw_items import *
+from triggerers import trigger_app
 
 
 class PatxiMenu(QMenu):
@@ -126,6 +127,8 @@ class PatxiMenu(QMenu):
             PROJECT.setFont(QtGui.QFont("Comic Sans MS", 10, QtGui.QFont.Bold))
 
         self.addAction(PROJECT)
+
+        PROJECT.triggered.connect(lambda: trigger_app("ANUS_PROJECT_MANAGER"))
 
     def AdditionalActions(self):
 

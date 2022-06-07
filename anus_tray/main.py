@@ -12,6 +12,7 @@ import os
 import sys
 import getpass
 import json
+import platform
 
 from img_utils import *
 from tray_menu import *
@@ -19,7 +20,12 @@ from draw_items import juche, bergli
 import settings as anus_settings
 
 
+def qt_fix():
+    if platform.system() == "Darwin":
+        os.environ['QT_MAC_WANTS_LAYER'] = '1'
+
 def main():
+    qt_fix()
     work_user = ["hslu", "admin"]
     app = QApplication(sys.argv)
 
