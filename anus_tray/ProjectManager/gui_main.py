@@ -237,13 +237,15 @@ class ProjectWindow(QtWidgets.QWidget):
         self.ProjectList.setColumnCount(1)
         self.ProjectList.setHeaderHidden(True)
 
+        self.menubox.addLayout(self.splashbox)
+        
         self.projectbox.addLayout(self.linebox)
         self.projectbox.addWidget(self.ProjectList)
 
         #### DRAW PROJECTBOX ####
         ## DRAW THE MENU ##
         self.menubox.addLayout(self.projectbox)
-        self.menubox.addLayout(self.splashbox)
+        
         self.menuwidget.setLayout(self.menubox)
 
         #############      ###############
