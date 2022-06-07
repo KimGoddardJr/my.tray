@@ -6,7 +6,11 @@ import platform
 from uuid import uuid4, UUID
 import shutil
 
-from PySide2 import QtGui, QtWidgets, QtCore, QtSvg
+try:
+    from PySide2 import QtGui, QtWidgets, QtCore, QtSvg
+except:
+    from PyQt5 import QtGui, QtWidgets, QtCore, QtSvg
+    
 from collections import OrderedDict
 import json
 
@@ -238,7 +242,7 @@ class ProjectWindow(QtWidgets.QWidget):
         self.ProjectList.setHeaderHidden(True)
 
         self.menubox.addLayout(self.splashbox)
-        
+
         self.projectbox.addLayout(self.linebox)
         self.projectbox.addWidget(self.ProjectList)
 

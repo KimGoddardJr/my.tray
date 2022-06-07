@@ -1,4 +1,8 @@
-from PySide2 import QtGui, QtWidgets, QtCore, QtSvg
+try:    
+    from PySide2 import QtGui, QtWidgets, QtCore, QtSvg
+except ImportError:
+    from PyQt5 import QtGui, QtWidgets, QtCore, QtSvg
+    
 from gui_methods import *
 import os
 

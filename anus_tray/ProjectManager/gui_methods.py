@@ -1,5 +1,9 @@
 from enum import Enum
-from PySide2 import QtGui, QtWidgets, QtCore, QtSvg
+try:
+    from PySide2 import QtGui, QtWidgets, QtCore, QtSvg
+except ImportError:
+    from PyQt5 import QtGui, QtWidgets, QtCore, QtSvg
+    
 import os
 # import hou
 # from plugins.houdini.houdini_methods import ExportTypes
