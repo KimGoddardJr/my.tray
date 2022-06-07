@@ -13,7 +13,6 @@ def qt_fix():
 
 def go():
     qt_fix()
-        
     app = QtWidgets.QApplication(sys.argv)
     dpiCheck()
     dialog = MainWindow()

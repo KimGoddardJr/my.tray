@@ -14,7 +14,7 @@ import os
 import shutil
 
 from .hslu_houdini_methods import NodeHandlingMethods, NodeProcessMethods
-from ProjectManager.Utils.makers import CreationMethods, NumberMethods
+from project_manager.Utils.makers import CreationMethods, NumberMethods
 
 """
 <activate_hython_terminal.sh> :

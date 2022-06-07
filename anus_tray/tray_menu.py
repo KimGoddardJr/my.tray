@@ -23,13 +23,13 @@ from draw_items import *
 from triggerers import trigger_app
 
 
-class PatxiMenu(QMenu):
-    def __init__(self, software_files: str, parent=None):
-        super(PatxiMenu, self).__init__(parent)
+class AnusMenu(QMenu):
+    def __init__(self, software_files: str, launchers: str, parent=None):
+        super(AnusMenu, self).__init__(parent)
         home = os.path.expanduser("~")
         self.project = None
         # temporary PATH for launchers. Needds to be made userdefinable
-        self.launchers = os.path.join(home, "devel", "launchers")
+        self.launchers = launchers
         self.software_files = software_files
         self.applications = {}
         self.icons = {}
@@ -52,13 +52,12 @@ class PatxiMenu(QMenu):
                 action = QAction(soft_ico, name, self)
 
                 exec_cmds = []
+                init_launcher = os.path.join(self.launchers, app["launcher"])
                 if platform.system() == "Windows":
-                    init_launcher = os.path.join(self.launchers,"windows", app["launcher"])
                     init_launcher += ".ps1"
                     exec_cmds.append("powershell.exe")
                     exec_cmds.append(init_launcher)
                 else:
-                    init_launcher = os.path.join(self.launchers,"unix", app["launcher"])
                     init_launcher += ".sh"
                     exec_cmds.append(init_launcher)
 
@@ -80,6 +79,7 @@ class PatxiMenu(QMenu):
         # remove everything from menu but last widget
         self.clear()
         self.BuildMenu()
+        self.PROJECT.setText(self.get_current_project())
 
     def Parser(self):
         glob_pattern = os.path.join(self.software_files, "*")
@@ -119,16 +119,16 @@ class PatxiMenu(QMenu):
         subprocess.Popen(exec_cmds)
 
     def CurProject(self):
-        PROJECT = QAction(self)
+        self.PROJECT = QAction(self)
         if self.project:
-            PROJECT.setText(self.project)
+            self.PROJECT.setText(self.project)
         else:
-            PROJECT.setText("No Project set")
-            PROJECT.setFont(QtGui.QFont("Comic Sans MS", 10, QtGui.QFont.Bold))
+            self.PROJECT.setText(self.get_current_project())
+            self.PROJECT.setFont(QtGui.QFont("Comic Sans MS", 10, QtGui.QFont.Bold))
 
-        self.addAction(PROJECT)
+        self.addAction(self.PROJECT)
 
-        PROJECT.triggered.connect(lambda: trigger_app("ANUS_PROJECT_MANAGER"))
+        self.PROJECT.triggered.connect(lambda: trigger_app("ANUS_PROJECT_MANAGER"))
 
     def AdditionalActions(self):
 
@@ -154,4 +154,15 @@ class PatxiMenu(QMenu):
 
         self.addAction(REFRESH)
         self.addAction(LEAVE)
+    
+    def get_current_project(self):
+        project_path = os.getenv("ANUS_PROJECT_MEMORY")
+        if os.path.exists(project_path):
+            cur_proj_line = open(project_path).read()
+            base = os.path.basename(cur_proj_line)
+            cur_proj = base.split(".")[0]
+        else:
+            cur_proj = "No Project Set"
+        
+        return cur_proj
 

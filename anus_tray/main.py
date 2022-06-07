@@ -26,6 +26,9 @@ def qt_fix():
 
 def main():
     qt_fix()
+    software_files = os.getenv("LAUNCHER_FILES")
+    launchers = os.getenv("LAUNCHERS")
+
     work_user = ["hslu", "admin"]
     app = QApplication(sys.argv)
 
@@ -34,14 +37,11 @@ def main():
     else:
         m_ico = juche()
 
-    cur_path = os.path.dirname(os.path.realpath(__file__))
-    software_files = os.path.join(cur_path, "..", "..", "launcher.files")
-
     tray = QSystemTrayIcon()
     tray.setIcon(m_ico)
     tray.setVisible(True)
 
-    menu = PatxiMenu(software_files)
+    menu = AnusMenu(software_files,launchers)
     menu.BuildMenu()
     # menu.addAction(sys.exit(app.exec_()))
     # menu.action_dict["BLENDER BUILD"][0].triggered.connect(lambda: print(menu.action_dict["BLENDER BUILD"][1]))

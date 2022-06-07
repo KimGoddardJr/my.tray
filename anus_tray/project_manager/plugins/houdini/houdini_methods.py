@@ -4,8 +4,8 @@ except ImportError:
     print("hou python not found")
 from uuid import uuid4
 import os
-from ProjectManager.db_methods import MethodsDB
-from ProjectManager.Utils.makers import CreationMethods
+from project_manager.db_methods import MethodsDB
+from project_manager.Utils.makers import CreationMethods
 from PySide2 import QtWidgets
 
 def ExportTypes():
