@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from sqlite3.dbapi2 import Error
-from .Utils.makers import *
+from Utils.makers import *
 from errno import errorcode
 import marshal
 import sys

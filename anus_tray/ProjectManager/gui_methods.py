@@ -1,11 +1,12 @@
 from enum import Enum
 from PySide2 import QtGui, QtWidgets, QtCore, QtSvg
 import os
-import hou
-from .hslu_houdini_methods import ExportTypes
-from .hslu_db_methods import MethodsDB
-from .hslu_util_methods import NumberMethods
-from .hou_buttons import *
+# import hou
+# from plugins.houdini.houdini_methods import ExportTypes
+# from plugins.houdini.houdini_buttons import *
+from db_methods import MethodsDB
+from Utils.makers import NumberMethods
+
 
 
 

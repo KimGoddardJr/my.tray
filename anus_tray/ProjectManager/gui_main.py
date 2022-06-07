@@ -10,7 +10,7 @@ from PySide2 import QtGui, QtWidgets, QtCore, QtSvg
 from collections import OrderedDict
 import json
 
-# from submitter import Spool
+from submissions.submitter import Spool
 from time import sleep
 
 from errno import ESRCH
@@ -32,7 +32,7 @@ from gui_methods import (
 from gui_objects import cuDropList, DropListItemLayout
 
 # from .houdini_methods import TopManagingMethods, ExportTypes
-from submission_methods import HoudiniSubmissionMethods
+# from submissions.submission_methods import HoudiniSubmissionMethods
 
 # from .hou_buttons import *
 
@@ -41,9 +41,19 @@ from submission_methods import HoudiniSubmissionMethods
 sys.path.insert(1, os.path.join(sys.path[0], "blade-modules"))
 ## ------------------------------------------------------------- ##
 
-# Creates the dialog box
+def dpiCheck():
+    x, y = GuiInfoMethods.GetResolution()
+
+    if x > 1920 and y > 1080:
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
+    else:
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, False)
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, False)
+
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self):
         super(MainWindow, self).__init__()
 
         x, y = GuiInfoMethods.GetResolution()
@@ -52,44 +62,80 @@ class MainWindow(QtWidgets.QMainWindow):
         up = QtCore.Qt.AlignTop
         down = QtCore.Qt.AlignRight
 
-        if x > 1920 and y > 1080:
-            QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-            QtWidgets.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
-
+        if platform.system() == 'Linux':
+                int_x = int(x/8)
+                int_y = int(y/4)
+        elif platform.system() == 'MacOS':
+                int_x = int(x/4)
+                int_y = int(y/2)
         else:
-            QtWidgets.QApplication.setAttribute(
-                QtCore.Qt.AA_EnableHighDpiScaling, False
-            )
-            QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, False)
+                int_x = int(x/4)
+                int_y = int(y/2)
+        
+        self.setMinimumWidth(int_x)
+        self.setMinimumHeight(int_y)
+        self.setWindowTitle("Project Manager")
 
-        stylesheet = hou.qt.styleSheet()
+        DATA_BASE = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        style_path = os.path.join(DATA_BASE, "style", "anus_pipe.css")
+        self.setStyleSheet(open(style_path).read())
 
-        self.setWindowTitle("Tractor Export Manager")
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
-        )
-        # sizePolicy.setHorizontalStretch(0)
-        # sizePolicy.setVerticalStretch(0)
-        # self.setSizePolicy(sizePolicy)
 
-        # create a style guide for the layout colors
-        self.setStyleSheet(stylesheet)
+        TRASH = self.style().standardIcon(getattr(QtWidgets.QStyle, "SP_TrashIcon"))
+        # Create the tray
+        self.tray = QtWidgets.QSystemTrayIcon()
+        self.tray.setIcon(TRASH)
+        self.tray.setVisible(True)
 
-        ###### SETUP THE TIMER #######
-        # self.Timer = QtCore.QTimer()
-        # self.Timer.timeout.connect(self.FlushAndRebuild)
+        self.setCentralWidget(ProjectWindow(self))
 
-        ###### Image PATHS #######
-        cur_dir = os.path.dirname(__file__)
-        self.ugly_tractor = "{}/../../../config/Icons/ugly_tractor.jpg".format(cur_dir)
-        self.tractor_image = "{}/../../../config/Icons/TractorRenderSpool.png".format(
-            cur_dir
-        )
 
+# Creates the dialog box
+class ProjectWindow(QtWidgets.QWidget):
+    def __init__(self):
+        super(ProjectWindow, self).__init__()
         self.home = os.path.expanduser("")
 
         ###### Initiate DB Class #######
         self.Database = MethodsDB()
+
+        ###############
+        ## DATA FLOW ##
+        ###############
+
+        self.BranchArray = []
+        self.BranchDict = {}
+
+        # self.ShotArray = []
+        ##############
+        # Acces Data #
+        ##############
+        self.ProjectData = {}
+
+        ##############
+        # Acces Info #
+        ##############
+        self.ProjectDataInfo = []
+
+        #############
+        #  MAX IDS  #
+        #############
+        self.max_seq = None
+        self.max_shot = None
+        # self.max_nodes = None
+        
+        self.DroppedWidgetList = {}
+
+        ## INITIATE THE PROJECT BASED ON THE DATABASE ##
+        self.initUI()
+        self.InitProject()
+
+    # Project History Handling
+
+    def initUI(self):
+
+        left = QtCore.Qt.AlignLeft
+        right = QtCore.Qt.AlignRight
 
         ################ Draw MAIN MENU ################
 
@@ -126,13 +172,13 @@ class MainWindow(QtWidgets.QMainWindow):
         Little Autocomplete test
         """
         self.crew_suggestions = [
-            "patxi.aguirre@hslu.ch",
-            "jean.first@hslu.ch",
-            "juergen.haas@hslu.ch",
-            "jochen.ehmann@hslu.ch",
-            "gerd.gockel@hslu.ch",
-            "procedural.godart@gmail.com",
-            "paxigalaxi@gmail.com",
+            "marroni.quaconi@anus.com",
+            "jenius.marroni@anus.com",
+            "juergensito.hase@anus.com",
+            "jochen.marroni@anus.com",
+            "gerd.glocke@anus.com",
+            "procedural.godart@anus.com",
+            "paxiravioli@anus.com",
         ]
 
         completer = QtWidgets.QCompleter(self.crew_suggestions)
@@ -161,8 +207,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.initbox.addLayout(self.projectinfobox)
         self.initbox.addLayout(self.setupbox)
 
-        splash_img = DrawingMethods.DrawImage(self.tractor_image)
-        self.splashbox.addWidget(splash_img)
+        # splash_img = DrawingMethods.DrawImage(self.tractor_image)
+        # self.splashbox.addWidget(splash_img)
         self.splashbox.addLayout(self.initbox)
         # self.splashbox.setAlignment(right)
         # self.splashbox.addStretch()
@@ -194,54 +240,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.projectbox.addLayout(self.linebox)
         self.projectbox.addWidget(self.ProjectList)
 
-        ###############
-        ## DATA FLOW ##
-        ###############
-
-        self.BranchArray = []
-        self.BranchDict = {}
-
-        # self.ShotArray = []
-        ##############
-        # Acces Data #
-        ##############
-        self.ProjectData = {}
-
-        ##############
-        # Acces Info #
-        ##############
-        self.ProjectDataInfo = []
-
-        #############
-        #  MAX IDS  #
-        #############
-
-        self.max_seq = None
-        self.max_shot = None
-        # self.max_nodes = None
-
-        ## DRAW THE MENU ##
-
-        self.menubox.addLayout(self.splashbox)
-
         #### DRAW PROJECTBOX ####
         self.menubox.addLayout(self.projectbox)
+        self.menuwidget.setLayout(self.menubox)
 
         #############      ###############
         ##### SET MENU COMPONENTS ########
         ##################################
-        self.tab_widgets = ProjectTabs(
+        self.tab_widgets = ProjectTabs(self,
             self.ProjectData, self.ProjectDataInfo, self.ProjectList,
         )
 
-        self.DroppedWidgetList = {}
-
-        self.menuwidget.setLayout(self.menubox)
-        self.widget_box = QtWidgets.QHBoxLayout()
+        self.widget_box = QtWidgets.QVBoxLayout()
         self.widget_box.addWidget(self.menuwidget)
-
-        self.setMenuWidget(self.menuwidget)
-        self.setCentralWidget(self.tab_widgets)
+        self.widget_box.addWidget(self.tab_widgets)
 
         ###################################################
         ############### PROJECT BUTTONS ###################
@@ -259,11 +271,9 @@ class MainWindow(QtWidgets.QMainWindow):
             lambda: self.SequenceChildSelected(self.ProjectList.currentItem())
         )
 
-        ## INITIATE THE PROJECT BASED ON THE DATABASE ##
+        ## DRAW THE MENU ##
+        self.menubox.addLayout(self.splashbox)
 
-        self.InitProject()
-
-    # Project History Handling
 
     def InitProject(self):
 
@@ -920,14 +930,14 @@ class ProjectTabs(QtWidgets.QWidget):
         """
         Accepted Node Types
         """
-        self.selection = hou.selectedNodes()
+        # self.selection = hou.selectedNodes()
 
         """
         Information Handling
         """
 
-        self.DropListWidget = HoudiniList(self)
-        self.DropListWidget.setStyleSheet(hou.qt.styleSheet())
+        self.DropListWidget = cuDropList(self)
+        # self.DropListWidget.setStyleSheet(hou.qt.styleSheet())
         self.DropListWidget.itemClicked.connect(self.MakePropsTabVisible)
         self.DropListWidget.itemSelectionChanged.connect(self.MakePropsTabVisible)
 
@@ -940,7 +950,7 @@ class ProjectTabs(QtWidgets.QWidget):
 
         self.execute_methods = ExecuteMethods()
 
-        self.hip_file_name = hou.hipFile.basename()
+        # self.hip_file_name = hou.hipFile.basename()
 
         self.tab_container = QtWidgets.QTabWidget()
 
@@ -954,7 +964,7 @@ class ProjectTabs(QtWidgets.QWidget):
         # self.submission_tab = QtWidgets.QWidget()
 
         processing_tab.setLayout(self.ProcessingTab())
-        processing_tab.setStyleSheet(""" background-color: rgb(100, 100, 100, 255) """)
+        # processing_tab.setStyleSheet(""" background-color: rgb(100, 100, 100, 255) """)
         # self.submission_tab.setLayout(self.SubmissionTab())
 
         self.tab_container.addTab(processing_tab, "NODES")
@@ -1017,9 +1027,14 @@ class ProjectTabs(QtWidgets.QWidget):
         # self.CookNodes = QtWidgets.QPushButton('')
 
         cookbutton = QtWidgets.QPushButton("Cook")
-        cookbutton.setIcon(cook2())
+        
         submitbutton = QtWidgets.QPushButton("Render with Tractor")
-        submitbutton.setIcon(render())
+
+        # try:
+        #     cookbutton.setIcon(cook2())
+        #     submitbutton.setIcon(render())
+        # except ImportError:
+        #     pass
 
         cookbutton.clicked.connect(lambda: self.ProcessNodes(True))
         submitbutton.clicked.connect(lambda: self.ProcessNodes(False))

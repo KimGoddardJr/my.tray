@@ -1,5 +1,5 @@
 from PySide2 import QtGui, QtWidgets, QtCore, QtSvg
-from .gui_methods import *
+from gui_methods import *
 import os
 
 
