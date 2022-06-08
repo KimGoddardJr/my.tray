@@ -6,6 +6,8 @@ import platform
 from uuid import uuid4, UUID
 import shutil
 
+# from sympy import Point
+
 try:
     from PySide2 import QtGui, QtWidgets, QtCore, QtSvg
 except:
@@ -25,7 +27,7 @@ from Utils.makers import (
     NumberMethods,
     ExecuteMethods,
 )
-from db_methods import MethodsDB, ProjectInfoRetriever
+from db_methods import MethodsDB, ProjectInfoHandling
 from gui_methods import (
     BooleanMethods,
     DrawingMethods,
@@ -284,7 +286,7 @@ class ProjectWindow(QtWidgets.QWidget):
 
     def InitProject(self):
 
-        db_path = ProjectInfoRetriever.GetProject()
+        db_path = ProjectInfoHandling.get_project()
 
         if db_path:
             if self.Database.CheckConn():
@@ -449,8 +451,8 @@ class ProjectWindow(QtWidgets.QWidget):
 
         if Dialog.Accepted and saved_name:
 
-            self.ProjectFileHistory(input_dir)
-            db_path = ProjectInfoRetriever.GetProject()
+            ProjectInfoHandling.set_project_file_history(input_dir)
+            db_path = ProjectInfoHandling.get_project()
             # print(input_dir)
             ############### INITIATE DATABASE #################
             try:
@@ -499,8 +501,8 @@ class ProjectWindow(QtWidgets.QWidget):
 
         if Dialog.Accepted and saved_name:
 
-            self.ProjectFileHistory(input_dir)
-            db_path = ProjectInfoRetriever.GetProject()
+            ProjectInfoHandling.set_project_file_history(input_dir)
+            db_path = ProjectInfoHandling.get_project()
 
             ############### Load DATABASE #################
             try:
@@ -530,23 +532,21 @@ class ProjectWindow(QtWidgets.QWidget):
             print("Cancelled")
             Dialog.close()
 
-    def ProjectFileHistory(self, projectpath):
-        """
-        Store the information of the currently saved or loaded project in a file
-        """
-        path_to_store_info = os.path.join(
-            os.path.expanduser("~"), ".active_hslu_project"
-        )
+    # def ProjectFileHistory(self, projectpath):
+    #     """
+    #     Store the information of the currently saved or loaded project in a file
+    #     """
+    #     path_to_store_info = os.path.dirname(os.getenv("ANUS_PROJECT_MEMORY"))
 
-        if os.path.exists(path_to_store_info):
-            shutil.rmtree(path_to_store_info)
+    #     if os.path.exists(path_to_store_info):
+    #         shutil.rmtree(path_to_store_info)
 
-        CreationMethods.makedir(path_to_store_info)
-        file_to_store = os.path.join(path_to_store_info, "project_history.txt")
-        with open(file_to_store, "w") as f:
-            f.write(f"{projectpath}")
+    #     CreationMethods.makedir(path_to_store_info)
+    #     file_to_store = os.getenv("ANUS_PROJECT_MEMORY")
+    #     with open(file_to_store, "w") as f:
+    #         f.write(f"{projectpath}")
 
-        return file_to_store
+    #     return file_to_store
 
     # USER DATA RETRIEVERS
 
@@ -645,7 +645,7 @@ class ProjectWindow(QtWidgets.QWidget):
     def AddSequenceToDB(self, id, sequence_name):
 
         # DATABASE HANDLING
-        db_path = ProjectInfoRetriever.GetProject()
+        db_path = ProjectInfoHandling.get_project()
         # we keep the size constant by first measuring max size of database and then adding the new item to the size
         DB_SeqGroup = (id, sequence_name)
 
@@ -841,7 +841,7 @@ class ProjectWindow(QtWidgets.QWidget):
         return self.ProjectDataInfo[seq_index][2][shotwidget.text(0)][1]
 
     def AddShotToDB(self, shot_id, shotwidget: QtWidgets.QTreeWidgetItem):
-        db_path = ProjectInfoRetriever.GetProject()
+        db_path = ProjectInfoHandling.get_project()
         # total_shots = self.ReturnTotalShots()
 
         # cur_shots = list(self.ProjectDataInfo[self.SequenceIndex()][2].keys())

@@ -36,11 +36,14 @@ for project in open_projects:
 """
 
 
-class ProjectInfoRetriever:
+class ProjectInfoHandling:
     @staticmethod
-    def GetProject():
-        home = os.path.expanduser("~")
-        history_file = os.path.join(home, ".active_hslu_project", "project_history.txt")
+    def get_project():
+        # home = os.path.expanduser("~")
+        # history_file = os.path.join(home, ".active_hslu_project", "project_history.txt")
+
+        history_file = os.getenv("ANUS_PROJECT_MEMORY")
+        print(history_file)
         try:
             if os.path.exists(history_file):
 
@@ -66,6 +69,23 @@ class ProjectInfoRetriever:
             print(f"WARNING: History File: '{history_file}' does not exist")
             db_path = None
             return db_path
+
+    @staticmethod
+    def set_project_file_history( projectpath):
+        """
+        Store the information of the currently saved or loaded project in a file
+        """
+        path_to_store_info = os.path.dirname(os.getenv("ANUS_PROJECT_MEMORY"))
+
+        if os.path.exists(path_to_store_info):
+            shutil.rmtree(path_to_store_info)
+
+        CreationMethods.makedir(path_to_store_info)
+        file_to_store = os.getenv("ANUS_PROJECT_MEMORY")
+        with open(file_to_store, "w") as f:
+            f.write(f"{projectpath}")
+
+        return file_to_store
 
 
 def connection_check(method):
@@ -113,7 +133,7 @@ class MethodsDB:
                                 ( job_history_id INTEGER UNIQUE NOT NULL ,job_uuid text ,job_name text ,jobfile_path text, jobfile_type text, jobfile_sent INTEGER, jobfile_cooked INTEGER, PRIMARY KEY(job_history_id) )"""
         self.task_schema = """CREATE TABLE IF NOT EXISTS tasks
                                 ( task_id INTEGER UNIQUE NOT NULL, properties blob, job_id INTEGER, PRIMARY KEY(task_id), FOREIGN KEY(job_id) REFERENCES jobs(job_id) )"""
-        self.db_path = ProjectInfoRetriever.GetProject()
+        self.db_path = ProjectInfoHandling.get_project()
         if self.db_path:
             self.conn = self.ConnectionToDB()
             self.cur = self.conn.cursor()
