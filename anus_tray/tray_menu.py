@@ -127,7 +127,13 @@ class AnusMenu(QMenu):
             self.PROJECT.setFont(QtGui.QFont("Comic Sans MS", 10, QtGui.QFont.Bold))
 
         self.addAction(self.PROJECT)
-        self.PROJECT.triggered.connect(lambda: self.RunLauncher([os.getenv("ANUS_PM_LAUNCHER")]))
+        cmds = []
+
+        if platform.system() == "Windows":
+            cmds.append("powershell.exe")
+        cmds.append(os.getenv("ANUS_PM_LAUNCHER"))
+
+        self.PROJECT.triggered.connect(lambda: self.RunLauncher(cmds))
 
     def AdditionalActions(self):
 
