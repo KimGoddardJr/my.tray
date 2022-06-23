@@ -133,12 +133,40 @@ class ProjectWindow(QtWidgets.QWidget):
         self.DroppedWidgetList = {}
 
         ## INITIATE THE PROJECT BASED ON THE DATABASE ##
-        self.initUI()
-        self.InitProject()
+        self.init_ui()
+        self.init_project()
 
     # Project History Handling
 
-    def initUI(self):
+    def init_opts(self):
+        
+        pass
+
+    def add_tag(self,text):
+        tag = QtWidgets.QFrame()
+        tag.setStyleSheet('border:1px solid rgb(192, 192, 192); border-radius: 4px;')
+        tag.setContentsMargins(2, 2, 2, 2)
+        tag.setFixedHeight(28)
+
+        layout = QtWidgets.QHBoxLayout()
+        layout.setContentsMargins(4, 4, 4, 4)
+        layout.setSpacing(10)
+        tag.setLayout(layout)
+
+        label = QtWidgets.QLabel(text)
+        xbutton = QtWidgets.QPushButton("X")
+        xbutton.setFixedWidth(20)
+        xbutton.setFixedHeight(20)
+        xbutton.clicked.connect(lambda: self.remove_tag(text))
+
+        layout.addWidget(label)
+        layout.addWidget(xbutton)
+    
+    def remove_tag(self,text):
+        print(text)
+
+
+    def init_ui(self):
 
         left = QtCore.Qt.AlignLeft
         right = QtCore.Qt.AlignRight
@@ -172,8 +200,8 @@ class ProjectWindow(QtWidgets.QWidget):
 
         self.projectname = self.projectname_widg.text()
 
-        self.new_project_bt.clicked.connect(self.SetProject)
-        self.load_project_bt.clicked.connect(self.LoadProject)
+        self.new_project_bt.clicked.connect(self.set_project)
+        self.load_project_bt.clicked.connect(self.load_project)
         """
         Little Autocomplete test
         """
@@ -189,13 +217,19 @@ class ProjectWindow(QtWidgets.QWidget):
 
         completer = QtWidgets.QCompleter(self.crew_suggestions)
         completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
-        completer.setCurrentRow
+        completer.setCurrentRow(0)
 
         self.crew_lbl = QtWidgets.QLabel("E-MAILS:")
         self.crew_lbl.setAlignment(right)
         self.crew_widg = QtWidgets.QLineEdit()
         self.crew_widg.setAlignment(left)
         self.crew_widg.setMaximumWidth(500)
+
+        self.empty = QtWidgets.QWidget()
+        self.h_layout = QtWidgets.QHBoxLayout()
+        self.h_layout.setSpacing(4)
+        self.h_layout.setContentsMargins(2,2,2,2)
+        self.empty.setLayout(self.h_layout)
 
         self.crew_widg.setCompleter(completer)
 
@@ -204,6 +238,8 @@ class ProjectWindow(QtWidgets.QWidget):
 
         self.projectinfobox.addWidget(self.crew_lbl, 1, 0)
         self.projectinfobox.addWidget(self.crew_widg, 1, 1)
+        self.projectinfobox.addWidget(self.empty, 1, 2)
+        
 
         self.setupbox.addStretch(1)
         self.setupbox.addWidget(self.new_project_bt)
@@ -268,23 +304,23 @@ class ProjectWindow(QtWidgets.QWidget):
         ###################################################
         ############### PROJECT BUTTONS ###################
         ###################################################
-        self.sequencebutton.clicked.connect(self.AddSequence)
+        self.sequencebutton.clicked.connect(self.add_sequence)
 
         self.delete_sequence.clicked.connect(
-            lambda: self.RemoveSelectedSequence(self.ProjectList.currentItem())
+            lambda: self.remove_selected_sequence(self.ProjectList.currentItem())
         )
 
         # connect the touching of lines to the same function
-        self.ProjectList.itemClicked.connect(self.UnlockSequenceButtons)
+        self.ProjectList.itemClicked.connect(self.unlock_sequence_buttons)
 
         self.ProjectList.itemClicked.connect(
-            lambda: self.SequenceChildSelected(self.ProjectList.currentItem())
+            lambda: self.sequence_child_selected(self.ProjectList.currentItem())
         )
 
         self.setLayout(self.widget_box)
 
 
-    def InitProject(self):
+    def init_project(self):
 
         db_path = ProjectInfoHandling.get_project()
 
@@ -292,22 +328,22 @@ class ProjectWindow(QtWidgets.QWidget):
             if self.Database.CheckConn():
                 self.Database.CloseConnection()
 
-            self.GetMaxIDs()
+            self.get_max_IDs()
 
             db_path_basename = os.path.basename(db_path).split(".proj")[0]
             print(db_path_basename)
 
             self.Database.LoadDB(db_path)
 
-            self.tab_widgets.InitDB(db_path)
+            self.tab_widgets.init_db(db_path)
 
             self.projectname_widg.setText(db_path_basename)
 
             StylingMethods.SetLabelStyle(self.projectname_widg, False)
 
             # REGENERATE THE PROJECT DATA FROM THE DATABASE
-            self.Rebuild()
-            self.tab_widgets.HideAllItems()
+            self.rebuild()
+            self.tab_widgets.hide_all_items()
 
             # self.tab_widgets.Make
 
@@ -315,7 +351,7 @@ class ProjectWindow(QtWidgets.QWidget):
             self.projectname_widg.setText("No Project Loaded")
             StylingMethods.SetLabelStyle(self.projectname_widg, True)
 
-    def GetMaxIDs(self):
+    def get_max_IDs(self):
 
         self.max_seq = self.Database.GetSequenceMaxId()
         print(f"The Maximum Sequence ID is currently: {self.max_seq}")
@@ -324,17 +360,17 @@ class ProjectWindow(QtWidgets.QWidget):
         # self.max_nodes = self.Database.GetJobMaxId()
         # print(f"The Maximum Job ID is currently: {self.max_nodes}")
 
-    def Rebuild(self):
+    def rebuild(self):
         Fetched_Sequences = self.Database.FetchAllSequences()
         Fetched_Shots = self.Database.FetchAllShots()
         Fetched_Nodes = self.Database.FetchAllJobs()
         Fetched_Job_History = self.Database.FetchAllJobHistory()
 
-        self.RebuildCascade(
+        self.rebuild_cascade(
             Fetched_Sequences, Fetched_Shots, Fetched_Nodes, Fetched_Job_History
         )
 
-    def RebuildCascade(self, sequence_list, shot_list, node_list, node_history):
+    def rebuild_cascade(self, sequence_list, shot_list, node_list, node_history):
         """
         acces the widget by storing it in a temporary array
         """
@@ -350,9 +386,9 @@ class ProjectWindow(QtWidgets.QWidget):
         Start Recreation Cascade
         """
         for i, seq_id in enumerate(sequence_list):
-            seq_widg = self.AddSequenceWidget(seq_id[1])
+            seq_widg = self.add_sequence_widget(seq_id[1])
             t_widg.append(seq_widg)
-            self.AddSequenceToDict(seq_id[0], seq_id[1])
+            self.add_sequence_to_dict(seq_id[0], seq_id[1])
 
             cur_seq_shots = self.Database.FetchAllShotsBySequence(seq_id[0])
 
@@ -360,11 +396,11 @@ class ProjectWindow(QtWidgets.QWidget):
             if len(cur_seq_shots) >= 1:
                 for shot_tuple in cur_seq_shots:
                     cur_seq_widg = t_widg[i]
-                    new_shot, sequence_parent = self.AddShotToSequence(cur_seq_widg)
+                    new_shot, sequence_parent = self.add_shot_to_sequence(cur_seq_widg)
 
                     parent_index = self.ProjectList.indexOfTopLevelItem(sequence_parent)
 
-                    shot_nodes_d = self.AddShotToDict(
+                    shot_nodes_d = self.add_shot_to_dict(
                         shot_tuple[0], parent_index, new_shot
                     )
 
@@ -376,11 +412,11 @@ class ProjectWindow(QtWidgets.QWidget):
                             shot_nodes_d[shot_job[1]] = [shot_tuple[0], shot_job[2]]
         try:
             for history in node_history:
-                self.tab_widgets.ReloadNodeHistory(
+                self.tab_widgets.reload_node_history(
                     history[1], history[2], history[3], history[5], history[6],
                 )
-                self.tab_widgets.DropWidgetCreation(history[1], history[2])
-                self.tab_widgets.MakeOnlyShotNodesVisible(shot_nodes_d)
+                self.tab_widgets.drop_widget_creation(history[1], history[2])
+                self.tab_widgets.make_only_shot_nodes_visible(shot_nodes_d)
 
                 if hou.node(history[2]) and hou.node(history[2]).userData("uuid"):
                     if hou.node(history[2]).userData("uuid") == history[1]:
@@ -389,19 +425,24 @@ class ProjectWindow(QtWidgets.QWidget):
                                 hou.nodeEventType.NameChanged,
                                 hou.nodeEventType.BeingDeleted,
                             ),
-                            self.tab_widgets.NodeChangeCallback,
+                            self.tab_widgets.node_change_callback,
                         )
 
         except Exception as e:
             print(e)
             pass
-
+        print("\n")
+        print(self.Database.GetJobMaxId())
+        print(self.Database.GetJobHistoryMaxId())
+        print(self.tab_widgets.return_project_data_info())
+        print(self.tab_widgets.return_dropped_widget_list())
+        print("\n")
         self.tab_widgets.max_nodes = self.Database.GetJobMaxId()
         self.tab_widgets.max_history = self.Database.GetJobHistoryMaxId()
-        self.ProjectDataInfo = self.tab_widgets.ReturnProjectDataInfo()
-        self.DroppedWidgetList = self.tab_widgets.ReturnDroppedWidgetList()
+        # self.ProjectDataInfo = self.tab_widgets.return_project_data_info()
+        self.DroppedWidgetList = self.tab_widgets.return_dropped_widget_list()
 
-    def FlushCurrentHistory(self):
+    def flush_current_history(self):
         """
         Removes all items from the project list and the shot list
         """
@@ -424,14 +465,14 @@ class ProjectWindow(QtWidgets.QWidget):
 
         self.tab_widgets.GraphId = {}
 
-    def FlushAndRebuild(self):
-        self.FlushCurrentHistory()
-        self.Rebuild()
+    def flush_and_rebuild(self):
+        self.flush_current_history()
+        self.rebuild()
 
-    def CheckForNewContentInDatabase(self):
+    def check_for_new_content_in_database(self):
         pass
 
-    def SetProject(self):
+    def set_project(self):
         """
         This function will save the current project in the database.
         """
@@ -462,13 +503,13 @@ class ProjectWindow(QtWidgets.QWidget):
 
                 self.Database.CreateDB(input_dir)
 
-                self.tab_widgets.InitDB(input_dir)
+                self.tab_widgets.init_db(input_dir)
 
-                self.GetMaxIDs()
+                self.get_max_IDs()
 
-                self.FlushCurrentHistory()
+                self.flush_current_history()
 
-                self.Rebuild()
+                self.rebuild()
 
                 self.projectname_widg.setText(saved_name)
                 StylingMethods.SetLabelStyle(self.projectname_widg, False)
@@ -483,7 +524,7 @@ class ProjectWindow(QtWidgets.QWidget):
             print("Cancelled")
             Dialog.close()
 
-    def LoadProject(self):
+    def load_project(self):
         """
         This function will load a project from the database.
         """
@@ -511,13 +552,13 @@ class ProjectWindow(QtWidgets.QWidget):
                         self.Database.CloseConnection()
 
                 self.Database.LoadDB(input_dir)
-                self.tab_widgets.InitDB(input_dir)
+                self.tab_widgets.init_db(input_dir)
 
-                self.GetMaxIDs()
+                self.get_max_IDs()
 
-                self.FlushCurrentHistory()
+                self.flush_current_history()
 
-                self.Rebuild()
+                self.rebuild()
 
                 self.projectname_widg.setText(saved_name)
                 StylingMethods.SetLabelStyle(self.projectname_widg, False)
@@ -550,29 +591,29 @@ class ProjectWindow(QtWidgets.QWidget):
 
     # USER DATA RETRIEVERS
 
-    def SequenceIndex(self):
+    def sequence_index(self):
         return self.ProjectList.indexOfTopLevelItem(self.ProjectList.currentItem())
 
     """ 
     SEQUENCE ADDITION AND DELETION
     """
 
-    def AddSequence(self):
+    def add_sequence(self):
         print("This is the first ProjectdataInfo:", self.ProjectDataInfo)
         if self.max_seq:
             self.max_seq += 1
         else:
             self.max_seq = 1
 
-        self.AddSequenceWidget(self.sequencename.text())
-        self.AddSequenceToDict(self.max_seq, self.sequencename.text())
-        self.AddSequenceToDB(self.max_seq, self.sequencename.text())
+        self.add_sequence_widget(self.sequencename.text())
+        self.add_sequence_to_dict(self.max_seq, self.sequencename.text())
+        self.add_sequence_to_db(self.max_seq, self.sequencename.text())
 
-        # self.FlushAndRebuild()
+        # self.flush_and_rebuild()
 
-        # self.FlushAndRebuild()
+        # self.flush_and_rebuild()
 
-    def AddSequenceWidget(self, sequence_name):
+    def add_sequence_widget(self, sequence_name):
 
         treebranch_container = QtWidgets.QWidget()
         treebranchbox = QtWidgets.QHBoxLayout()
@@ -613,9 +654,9 @@ class ProjectWindow(QtWidgets.QWidget):
         After selecting the generated project run the unlock function to lock all buttons 
         but the ones on the selected branch
         """
-        self.UnlockSequenceButtons()
+        self.unlock_sequence_buttons()
 
-        add_scene_button.clicked.connect(self.AddShot)
+        add_scene_button.clicked.connect(self.add_shot)
 
         # ShotDict = {}
         # ShotDict[self.treebranch] = []
@@ -631,7 +672,7 @@ class ProjectWindow(QtWidgets.QWidget):
         # treebranch_name = GuiInfoMethods.GetText(self.treebranch)
         return treebranch
 
-    def AddSequenceToDict(self, id, sequence_name):
+    def add_sequence_to_dict(self, id, sequence_name):
         print("This is happening")
         """
         Every new sequence info group has the name of the sequence and a dict to identify the scene later
@@ -642,7 +683,7 @@ class ProjectWindow(QtWidgets.QWidget):
         print("This is all of ProjectdataInfo: ", self.ProjectDataInfo)
         # print(self.ProjectDataInfo)
 
-    def AddSequenceToDB(self, id, sequence_name):
+    def add_sequence_to_db(self, id, sequence_name):
 
         # DATABASE HANDLING
         db_path = ProjectInfoHandling.get_project()
@@ -658,7 +699,7 @@ class ProjectWindow(QtWidgets.QWidget):
 
         # self.SequenceNamesUpdater(project_name)
 
-    def UpdateProjectDataInfo(self, parent):
+    def update_project_data_info(self, parent):
 
         del self.ProjectDataInfo[parent]
 
@@ -666,7 +707,7 @@ class ProjectWindow(QtWidgets.QWidget):
         """
         Perform this operation only if the currently deleted item is not the last selected one
         """
-        # if self.SequenceIndex() + 1 < size:
+        # if self.sequence_index() + 1 < size:
         """
         Check if number of sequence is larger than the index of the current listitem
         and substract an index from it.
@@ -688,11 +729,11 @@ class ProjectWindow(QtWidgets.QWidget):
 
         # print(self.SequenceNames)
 
-    def RemoveSelectedSequence(self, parent):
+    def remove_selected_sequence(self, parent):
         try:
-            # self.UpdateIndexOfSequenceNamesList(self.SequenceIndex())
-            cur_proj_index = self.ProjectDataInfo[self.SequenceIndex()][1]
-            cur_shot_index = self.ProjectDataInfo[self.SequenceIndex()][2]
+            # self.UpdateIndexOfSequenceNamesList(self.sequence_index())
+            cur_proj_index = self.ProjectDataInfo[self.sequence_index()][1]
+            cur_shot_index = self.ProjectDataInfo[self.sequence_index()][2]
             print(f"{cur_proj_index} index deleted")
             # we use the stored index to delete the sequence from the database
 
@@ -713,17 +754,17 @@ class ProjectWindow(QtWidgets.QWidget):
             self.Database.RemoveShotGroupFromDB(cur_proj_index)
             self.Database.RemoveSequenceFromDB(cur_proj_index)
 
-            self.UpdateProjectDataInfo(self.SequenceIndex())
+            self.update_project_data_info(self.sequence_index())
 
-            self.ProjectList.takeTopLevelItem(self.SequenceIndex())
+            self.ProjectList.takeTopLevelItem(self.sequence_index())
 
-            self.tab_widgets.UpdateMaxJobID()
-            self.tab_widgets.UpdateMaxHistoryID()
+            self.tab_widgets.update_max_job_ID()
+            self.tab_widgets.update_max_history_ID()
 
-            # self.FlushAndRebuild()
+            # self.flush_and_rebuild()
             try:
                 self.ProjectList.setItemSelected(
-                    self.ProjectList.topLevelItem(self.SequenceIndex()), False
+                    self.ProjectList.topLevelItem(self.sequence_index()), False
                 )
             except:
                 pass
@@ -732,12 +773,12 @@ class ProjectWindow(QtWidgets.QWidget):
             print("working...")
             del self.BranchDict[parent]
 
-            # del self.ShotArray[self.SequenceIndex()]
+            # del self.ShotArray[self.sequence_index()]
 
             del self.ProjectData[parent]
 
             print("The Sequence Index deleted \n")
-            print(self.SequenceIndex())
+            print(self.sequence_index())
 
             print("You deleted a Sequence and these are the current ones:\n")
             print(self.ProjectDataInfo)
@@ -749,12 +790,12 @@ class ProjectWindow(QtWidgets.QWidget):
             print("No Tree to remove")
             pass
 
-    def ProjectSelection(self):
+    def project_selection(self):
         print(self.ProjectList.currentItem().isSelected())
 
         # cur_button.setEnabled(True)
 
-    def UnlockSequenceButtons(self):
+    def unlock_sequence_buttons(self):
         try:
             for treebranch in self.BranchDict:
                 self.BranchDict[treebranch][0].setEnabled(False)
@@ -773,7 +814,7 @@ class ProjectWindow(QtWidgets.QWidget):
     SHOT TO SEQUENCE ADDITION
     """
 
-    def AddShot(self):
+    def add_shot(self):
 
         if self.max_shot:
             self.max_shot += 1
@@ -782,20 +823,20 @@ class ProjectWindow(QtWidgets.QWidget):
 
         print(f"This is happening: {self.max_shot} added")
 
-        new_shot, sequence_parent = self.AddShotToSequence(
+        new_shot, sequence_parent = self.add_shot_to_sequence(
             self.ProjectList.currentItem()
         )
 
         parent_index = self.ProjectList.indexOfTopLevelItem(sequence_parent)
         print(f"Shot to Parent with THIS INDEX: {parent_index} added")
 
-        self.AddShotToDict(self.max_shot, parent_index, new_shot)
+        self.add_shot_to_dict(self.max_shot, parent_index, new_shot)
         """
-        AddShotToSequence returns a shot object that we can use to retrieve infromation
+        add_shot_to_sequence returns a shot object that we can use to retrieve infromation
         """
-        self.AddShotToDB(self.max_shot, new_shot)
+        self.add_shot_to_db(self.max_shot, new_shot)
 
-    def AddShotToSequence(self, parent: QtWidgets.QTreeWidgetItem):
+    def add_shot_to_sequence(self, parent: QtWidgets.QTreeWidgetItem):
         num_shotwidgets = parent.childCount()
 
         # for treebranch in self.BranchDict:
@@ -809,11 +850,11 @@ class ProjectWindow(QtWidgets.QWidget):
 
         return shotwidget, parent
 
-    def AddShotToDict(
+    def add_shot_to_dict(
         self, shot_id: int, seq_index: int, shotwidget: QtWidgets.QTreeWidgetItem,
     ):
 
-        # self.ShotArray[self.SequenceIndex()][parent].append(shotwidget)
+        # self.ShotArray[self.sequence_index()][parent].append(shotwidget)
 
         """
         Similar to the process in the Main Function
@@ -834,20 +875,21 @@ class ProjectWindow(QtWidgets.QWidget):
         """
 
         print(shotwidget.text(0))
+        print(self.ProjectDataInfo)
         self.ProjectDataInfo[seq_index][2][shotwidget.text(0)] = [shot_id, {}]
 
         # print(self.ProjectDataInfo)
 
         return self.ProjectDataInfo[seq_index][2][shotwidget.text(0)][1]
 
-    def AddShotToDB(self, shot_id, shotwidget: QtWidgets.QTreeWidgetItem):
+    def add_shot_to_db(self, shot_id, shotwidget: QtWidgets.QTreeWidgetItem):
         db_path = ProjectInfoHandling.get_project()
-        # total_shots = self.ReturnTotalShots()
+        # total_shots = self.return_total_shots()
 
-        # cur_shots = list(self.ProjectDataInfo[self.SequenceIndex()][2].keys())
+        # cur_shots = list(self.ProjectDataInfo[self.sequence_index()][2].keys())
 
         cur_shot_name = shotwidget.text(0)
-        cur_seq_id = self.ProjectDataInfo[self.SequenceIndex()][1]
+        cur_seq_id = self.ProjectDataInfo[self.sequence_index()][1]
 
         SH_SeqGroup = (shot_id, cur_shot_name, cur_seq_id)
 
@@ -861,45 +903,45 @@ class ProjectWindow(QtWidgets.QWidget):
                 self.Database.LoadDB(db_path)
                 self.Database.InsertShotDB(SH_SeqGroup)
 
-    def ReturnTotalShots(self):
+    def return_total_shots(self):
         total_shots = 0
 
         for sequence in self.ProjectDataInfo:
             total_shots += len(list(sequence[2].keys()))
         return total_shots
 
-    def SequenceChildSelected(self, widget):
+    def sequence_child_selected(self, widget):
 
-        self.tab_widgets.UpdateProject(
+        self.tab_widgets.update_project(
             self.projectname, self.ProjectData, self.ProjectDataInfo, self.ProjectList,
         )
         self.tab_widgets.max_nodes = self.Database.GetJobMaxId()
         print(
             f"These are max nodes in tab widgets seen from other class: {self.tab_widgets.max_nodes}"
         )
-        self.ProjectDataInfo = self.tab_widgets.ReturnProjectDataInfo()
-        self.DroppedWidgetList = self.tab_widgets.ReturnDroppedWidgetList()
+        self.ProjectDataInfo = self.tab_widgets.return_project_data_info()
+        self.DroppedWidgetList = self.tab_widgets.return_dropped_widget_list()
         try:
             if widget.parent().__class__.__name__ == "QTreeWidgetItem":
                 print("this is a Shot")
                 # print(widget)
-                cur_shot_nodes_info = self.tab_widgets.PreShotDrop(
+                cur_shot_nodes_info = self.tab_widgets.pre_shot_drop(
                     self.ProjectDataInfo
                 )[1]
-                self.tab_widgets.DropActivation(True)
+                self.tab_widgets.drop_activation(True)
 
-                # self.tab_widgets.HideAllItems(True)
+                # self.tab_widgets.hide_all_items(True)
 
-                self.tab_widgets.MakeOnlyShotNodesVisible(cur_shot_nodes_info)
+                self.tab_widgets.make_only_shot_nodes_visible(cur_shot_nodes_info)
 
                 # self.tab_widgets.DropsPerShot(self.ProjectData,self.ProjectList)
 
             else:
                 print("This is currently a Sequence")
-                print(self.SequenceIndex())
+                print(self.sequence_index())
                 # print(self.SequenceNames)
-                self.tab_widgets.DropActivation(False)
-                self.tab_widgets.HideAllItems()
+                self.tab_widgets.drop_activation(False)
+                self.tab_widgets.hide_all_items()
 
         except Exception as e:
             print(e)
@@ -945,8 +987,8 @@ class ProjectTabs(QtWidgets.QWidget):
 
         self.DropListWidget = cuDropList(self)
         # self.DropListWidget.setStyleSheet(hou.qt.styleSheet())
-        self.DropListWidget.itemClicked.connect(self.MakePropsTabVisible)
-        self.DropListWidget.itemSelectionChanged.connect(self.MakePropsTabVisible)
+        self.DropListWidget.itemClicked.connect(self.make_props_tab_visible)
+        self.DropListWidget.itemSelectionChanged.connect(self.make_props_tab_visible)
 
         self.NodeHistoryList = {}
 
@@ -961,18 +1003,18 @@ class ProjectTabs(QtWidgets.QWidget):
 
         self.tab_container = QtWidgets.QTabWidget()
 
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
+    def init_ui(self):
 
         # The main layout for the window
 
         processing_tab = QtWidgets.QWidget()
         # self.submission_tab = QtWidgets.QWidget()
 
-        processing_tab.setLayout(self.ProcessingTab())
+        processing_tab.setLayout(self.processing_tab())
         # processing_tab.setStyleSheet(""" background-color: rgb(100, 100, 100, 255) """)
-        # self.submission_tab.setLayout(self.SubmissionTab())
+        # self.submission_tab.setLayout(self.submission_tab())
 
         self.tab_container.addTab(processing_tab, "NODES")
         # self.tab_container.addTab(self.submission_tab, "SUBMISSION PROPERTIES")
@@ -987,10 +1029,10 @@ class ProjectTabs(QtWidgets.QWidget):
     Data Between Classes Update Handling
     """
 
-    def InitDB(self, db_path):
+    def init_db(self, db_path):
         self.Database.LoadDB(db_path)
 
-    def UpdateProject(
+    def update_project(
         self, ProjectName, ProjectData, ProjectDataInfo, ProjectList,
     ):
         self.projectname = ProjectName
@@ -998,17 +1040,17 @@ class ProjectTabs(QtWidgets.QWidget):
         self.ProjectDataInfo = ProjectDataInfo
         self.ProjectList = ProjectList
 
-    def ReturnProjectDataInfo(self):
+    def return_project_data_info(self):
         return self.ProjectDataInfo
 
-    def ReturnDroppedWidgetList(self):
+    def return_dropped_widget_list(self):
         return self.DroppedWidgetList
 
     """
     Cook and Submission Tab
     """
 
-    def SceneWidgetInfo(self):
+    def scene_widget_info(self):
 
         shot = self.ProjectList.currentItem()
         shot_name = shot.text(0)
@@ -1016,7 +1058,7 @@ class ProjectTabs(QtWidgets.QWidget):
 
         return shot_name, shot_parent_index
 
-    def ProcessingTab(self):
+    def processing_tab(self):
 
         commandsbox = QtWidgets.QHBoxLayout()
         nodelistbox = QtWidgets.QVBoxLayout()
@@ -1026,7 +1068,7 @@ class ProjectTabs(QtWidgets.QWidget):
         # data = hou.qt.mimeType.nodePath
 
         # self.DropListWidget.viewport().setAcceptDrops(True)
-        self.DropListWidget.nodesDropped.connect(self.NodeDropper)
+        self.DropListWidget.nodesDropped.connect(self.node_dropper)
         self.DropListWidget.setSelectionMode(
             QtWidgets.QAbstractItemView.ExtendedSelection
         )
@@ -1043,8 +1085,8 @@ class ProjectTabs(QtWidgets.QWidget):
         # except ImportError:
         #     pass
 
-        cookbutton.clicked.connect(lambda: self.ProcessNodes(True))
-        submitbutton.clicked.connect(lambda: self.ProcessNodes(False))
+        cookbutton.clicked.connect(lambda: self.process_nodes(True))
+        submitbutton.clicked.connect(lambda: self.process_nodes(False))
 
         commandsbox.addWidget(cookbutton)
         commandsbox.addWidget(submitbutton)
@@ -1060,19 +1102,19 @@ class ProjectTabs(QtWidgets.QWidget):
     Cook Nodes Dropplist Widget Handling
     """
 
-    def DropActivation(self, Bool):
+    def drop_activation(self, Bool):
         self.DropListWidget.setAcceptDrops(Bool)
 
-    def UpdateDroppedWidgetList(self, uuid, item_widget, prop_tab_widget):
+    def update_dropped_widget_list(self, uuid, item_widget, prop_tab_widget):
         self.DroppedWidgetList[uuid] = [item_widget, prop_tab_widget]
 
-    def NodeDropper(self, l):
+    def node_dropper(self, l):
         # print(l)
         decoded_l = str(l, "utf-8")
         list_nodes = decoded_l.split("\t")
         print(list_nodes)
-        cur_shot_nodes_info = self.PreShotDrop(self.ProjectDataInfo)[1]
-        cur_shot_id = self.PreShotDrop(self.ProjectDataInfo)[0]
+        cur_shot_nodes_info = self.pre_shot_drop(self.ProjectDataInfo)[1]
+        cur_shot_id = self.pre_shot_drop(self.ProjectDataInfo)[0]
         print(f"Current shot ID is:{cur_shot_id}")
         for node in list_nodes:
             print(node)
@@ -1080,33 +1122,33 @@ class ProjectTabs(QtWidgets.QWidget):
             cur_node_type = hou.node(node).type().name()
 
             if cur_node_type in ExportTypes():
-                cur_dropped_id = self.CreateIdOnDrop(self.ProjectDataInfo, node)
+                cur_dropped_id = self.create_ID_on_drop(self.ProjectDataInfo, node)
 
                 print("DROPPED NODE ID is:", cur_dropped_id)
 
-                self.AddNodeToDB(cur_dropped_id, node, cur_shot_id)
+                self.add_node_to_db(cur_dropped_id, node, cur_shot_id)
 
             elif cur_node_type == "ropnet":
                 for child_node in hou.node(node).allSubChildren():
                     if child_node.type().name() in ExportTypes():
-                        cur_dropped_id = self.CreateIdOnDrop(
+                        cur_dropped_id = self.create_ID_on_drop(
                             self.ProjectDataInfo, child_node.path()
                         )
-                        self.AddNodeToDB(cur_dropped_id, child_node.path(), cur_shot_id)
+                        self.add_node_to_db(cur_dropped_id, child_node.path(), cur_shot_id)
 
-            self.UpdateProject(
+            self.update_project(
                 self.projectname,
                 self.ProjectData,
                 self.ProjectDataInfo,
                 self.ProjectList,
             )
-            self.MakeOnlyShotNodesVisible(cur_shot_nodes_info)
+            self.make_only_shot_nodes_visible(cur_shot_nodes_info)
 
     """
     ListWidgetItem Handling & Creation
     """
 
-    def DropWidgetCreation(self, uuid, node):
+    def drop_widget_creation(self, uuid, node):
 
         node_name = node.split("/")[-1]
         stored_node_history = self.Database.FetchAllJobHistory()
@@ -1114,20 +1156,20 @@ class ProjectTabs(QtWidgets.QWidget):
         newNodeItem = QtWidgets.QListWidgetItem()
 
         if hou.node(node):
-            newTabProp = self.CreatePropertyTab(hou.node(node).type().name())
+            newTabProp = self.create_property_tab(hou.node(node).type().name())
         else:
             if len(stored_node_history) >= 1:
                 chosen_one = [n_h for n_h in stored_node_history if n_h[1] == uuid][0]
-                newTabProp = self.CreatePropertyTab(chosen_one[4])
+                newTabProp = self.create_property_tab(chosen_one[4])
             else:
-                newTabProp = self.CreatePropertyTab("unknown")
+                newTabProp = self.create_property_tab("unknown")
 
         newNodeLayout = HoudiniDropListLayout(node, uuid, self)
         self.NodePropertyWidgets[uuid] = newNodeLayout.widg_cmds
 
         newNodeItem.setSizeHint(newNodeLayout.sizeHint())
 
-        self.UpdateDroppedWidgetList(uuid, newNodeItem, newTabProp)
+        self.update_dropped_widget_list(uuid, newNodeItem, newTabProp)
         # self.ListOfItems.append(newNodeItem)
 
         """
@@ -1142,10 +1184,10 @@ class ProjectTabs(QtWidgets.QWidget):
     ListWidgetItem to Node Methods
     """
 
-    def ProcessNodes(self, no_cook=False):
+    def process_nodes(self, no_cook=False):
         # Cook the nodes locall
 
-        cur_shot_nodes_info = self.PreShotDrop(self.ProjectDataInfo)[1]
+        cur_shot_nodes_info = self.pre_shot_drop(self.ProjectDataInfo)[1]
         ordered_cur_shot_nodes = OrderedDict(cur_shot_nodes_info.items())
 
         cook_locally = {}
@@ -1200,16 +1242,16 @@ class ProjectTabs(QtWidgets.QWidget):
     Node Visibility Handling
     """
 
-    def HideNodeListItem(self, uuid):
+    def hide_node_list_item(self, uuid):
         """
         The ListWidgetStays. The cur_shot_nodes_info gets deleted though.
         Important for later processing of node.
         """
-        cur_shot_nodes_info = self.PreShotDrop(self.ProjectDataInfo)[1]
+        cur_shot_nodes_info = self.pre_shot_drop(self.ProjectDataInfo)[1]
         del cur_shot_nodes_info[uuid]
         self.DroppedWidgetList[uuid][0].setHidden(True)
 
-    def HideAllItems(self):
+    def hide_all_items(self):
         if len(self.NodeHistoryList) >= 1:
             ordered_list_widgets = OrderedDict(self.DroppedWidgetList.items())
             for widget in ordered_list_widgets.values():
@@ -1218,11 +1260,11 @@ class ProjectTabs(QtWidgets.QWidget):
         else:
             pass
 
-    def MakeOnlyShotNodesVisible(self, cur_shot_nodes_info):
+    def make_only_shot_nodes_visible(self, cur_shot_nodes_info):
         print(cur_shot_nodes_info)
 
         if len(cur_shot_nodes_info) == 0:
-            self.HideAllItems()
+            self.hide_all_items()
         elif len(cur_shot_nodes_info) >= 1:
             ordered_current_nodes = OrderedDict(cur_shot_nodes_info.items())
             # ordered_nodes_history = OrderedDict(self.NodeHistoryList.items())
@@ -1244,16 +1286,16 @@ class ProjectTabs(QtWidgets.QWidget):
     Info Dict of User Activity Handling
     """
 
-    def PreShotDrop(self, ProjectDataInfo):
-        shot_name, shot_parent_index = self.SceneWidgetInfo()
+    def pre_shot_drop(self, ProjectDataInfo):
+        shot_name, shot_parent_index = self.scene_widget_info()
         cur_shot_nodes_info = ProjectDataInfo[shot_parent_index][2][shot_name]
         return cur_shot_nodes_info
 
-    def MakeNodeHistory(self, node, id):
+    def make_node_history(self, node, id):
         """sent = False, cooked = False, present in scene = True"""
         self.NodeHistoryList[id] = [node, hou.hipFile.name(), False, False]
 
-    def ReloadNodeHistory(self, id, node, hipfile, sent, cooked):
+    def reload_node_history(self, id, node, hipfile, sent, cooked):
         """sent = False, cooked = False"""
         self.NodeHistoryList[id] = [
             node,
@@ -1266,7 +1308,7 @@ class ProjectTabs(QtWidgets.QWidget):
     On Node Dropped/ Renamed Methods
     """
 
-    def NodeChangeCallback(self, node, event_type, **kwargs):
+    def node_change_callback(self, node, event_type, **kwargs):
         args = ["remove", "rename"]
         node_uuid = node.userData("uuid")
         stored_node_history = self.Database.FetchAllJobHistory()
@@ -1278,32 +1320,32 @@ class ProjectTabs(QtWidgets.QWidget):
                     if event_type == hou.nodeEventType.BeingDeleted:
 
                         self.NodeHistoryList[node_uuid][4] = False
-                        self.UpdateProjectDataInfo(
+                        self.update_project_data_info(
                             self.ProjectDataInfo, self.NodeHistoryList, args[0]
                         )
 
                     elif event_type == hou.nodeEventType.NameChanged:
                         # check if widgets exist and window is open
                         self.NodeHistoryList[node_uuid][0] = node.path()
-                        self.UpdateProjectDataInfo(
+                        self.update_project_data_info(
                             self.ProjectDataInfo, self.NodeHistoryList, args[1]
                         )
-                        self.ChangeLabelName(
+                        self.change_label_name(
                             node, self.NodePropertyWidgets[node_uuid][0]
                         )
-                        # self.MakePropsTabVisible()
+                        # self.make_props_tab_visible()
 
                         self.Database.ChangeJobNameByUUID(node.path(), node_uuid)
                         self.Database.ChangeJobHistoryNameByUUID(node.path(), node_uuid)
 
-    def ChangeLabelName(self, node, widget):
+    def change_label_name(self, node, widget):
         widget.setText(node.name())
 
-    def AddIdToNode(self, dropped_node, uuid):
+    def add_ID_to_node(self, dropped_node, uuid):
         node = hou.node(dropped_node)
         node.setUserData("uuid", str(uuid))
 
-    def UpdateProjectDataInfo(self, ProjectDataInfo, NodeHistoryList, event_type):
+    def update_project_data_info(self, ProjectDataInfo, NodeHistoryList, event_type):
 
         for seq in ProjectDataInfo:
             if len(seq[2]) > 0:
@@ -1322,19 +1364,19 @@ class ProjectTabs(QtWidgets.QWidget):
         print(ProjectDataInfo)
         return ProjectDataInfo
 
-    def UpdateMaxJobID(self):
+    def update_max_job_ID(self):
         self.max_nodes = self.Database.GetJobMaxId()
 
-    def UpdateMaxHistoryID(self):
+    def update_max_history_ID(self):
         self.max_history = self.Database.GetJobHistoryMaxId()
 
     """
     Id per Dropped Node Handling
     """
 
-    def CreateIdOnDrop(self, ProjectDataInfo, dropped_node):
-        cur_shot_id = self.PreShotDrop(ProjectDataInfo)[0]
-        cur_shot_nodes_info = self.PreShotDrop(ProjectDataInfo)[1]
+    def create_ID_on_drop(self, ProjectDataInfo, dropped_node):
+        cur_shot_id = self.pre_shot_drop(ProjectDataInfo)[0]
+        cur_shot_nodes_info = self.pre_shot_drop(ProjectDataInfo)[1]
 
         cur_dropped_node = dropped_node
 
@@ -1379,21 +1421,21 @@ class ProjectTabs(QtWidgets.QWidget):
                                 # add to the nodes db
                                 return old_uuid
 
-                            elif self.CompareTupleInList(dropped_tuple, sdn_ps):
+                            elif self.compare_tuple_in_list(dropped_tuple, sdn_ps):
 
                                 cur_dropped_node = dropped_node
                                 new_old_uuid = hou.node(cur_dropped_node).userData(
                                     "uuid"
                                 )
 
-                                self.MakeNodeHistory(cur_dropped_node, new_old_uuid)
+                                self.make_node_history(cur_dropped_node, new_old_uuid)
 
                                 hou.node(cur_dropped_node).addEventCallback(
                                     (
                                         hou.nodeEventType.NameChanged,
                                         hou.nodeEventType.BeingDeleted,
                                     ),
-                                    self.NodeChangeCallback,
+                                    self.node_change_callback,
                                 )
 
                                 cur_shot_nodes_info[new_old_uuid] = [
@@ -1401,7 +1443,7 @@ class ProjectTabs(QtWidgets.QWidget):
                                     cur_dropped_node,
                                 ]
 
-                                self.DropWidgetCreation(new_old_uuid, cur_dropped_node)
+                                self.drop_widget_creation(new_old_uuid, cur_dropped_node)
 
                                 return new_old_uuid
 
@@ -1413,14 +1455,14 @@ class ProjectTabs(QtWidgets.QWidget):
                         cur_dropped_node = dropped_node
                         new_old_uuid = hou.node(cur_dropped_node).userData("uuid")
 
-                        self.MakeNodeHistory(cur_dropped_node, new_old_uuid)
+                        self.make_node_history(cur_dropped_node, new_old_uuid)
 
                         hou.node(cur_dropped_node).addEventCallback(
                             (
                                 hou.nodeEventType.NameChanged,
                                 hou.nodeEventType.BeingDeleted,
                             ),
-                            self.NodeChangeCallback,
+                            self.node_change_callback,
                         )
 
                         cur_shot_nodes_info[new_old_uuid] = [
@@ -1428,7 +1470,7 @@ class ProjectTabs(QtWidgets.QWidget):
                             cur_dropped_node,
                         ]
 
-                        self.DropWidgetCreation(new_old_uuid, cur_dropped_node)
+                        self.drop_widget_creation(new_old_uuid, cur_dropped_node)
 
                         return new_old_uuid
 
@@ -1441,18 +1483,18 @@ class ProjectTabs(QtWidgets.QWidget):
                         new_uuid = str(uuid4())
                         cur_dropped_id = new_uuid
 
-                        self.MakeNodeHistory(cur_dropped_node, cur_dropped_id)
+                        self.make_node_history(cur_dropped_node, cur_dropped_id)
                         # print(hou.node(cur_dropped_node).userData("uuid"))
 
-                        self.AddIdToNode(cur_dropped_node, cur_dropped_id)
+                        self.add_ID_to_node(cur_dropped_node, cur_dropped_id)
                         hou.node(cur_dropped_node).addEventCallback(
                             (
                                 hou.nodeEventType.NameChanged,
                                 hou.nodeEventType.BeingDeleted,
                             ),
-                            self.NodeChangeCallback,
+                            self.node_change_callback,
                         )
-                        self.DropWidgetCreation(cur_dropped_id, cur_dropped_node)
+                        self.drop_widget_creation(cur_dropped_id, cur_dropped_node)
 
                         # TODO: Here is the mistake this is missing the shot_id
                         cur_shot_nodes_info[cur_dropped_id] = [
@@ -1471,7 +1513,7 @@ class ProjectTabs(QtWidgets.QWidget):
     Databse Connection and Handling
     """
 
-    def AddNodeToDB(self, cur_dropped_id, cur_dropped_node, shot_id):
+    def add_node_to_db(self, cur_dropped_id, cur_dropped_node, shot_id):
         # only insert into Database if cur_dropped_id is not already with shot_id
 
         print(f"Max Nodes BEFORE Dropping No Reload:{self.max_nodes}")
@@ -1487,12 +1529,12 @@ class ProjectTabs(QtWidgets.QWidget):
                     print(d_nid_p_s)
 
                     if cur_dropped_id in d_nid_p_s.keys():
-                        if len(jobs) >= 1 and self.CompareTupleInList(
+                        if len(jobs) >= 1 and self.compare_tuple_in_list(
                             (cur_dropped_id, shot_id), nid_p_s
                         ):
 
                             self.max_nodes = self.Database.GetJobMaxId() + 1
-                            self.NodeDBAddition(
+                            self.node_db_addition(
                                 self.max_nodes,
                                 cur_dropped_id,
                                 cur_dropped_node,
@@ -1508,10 +1550,10 @@ class ProjectTabs(QtWidgets.QWidget):
                     else:
                         self.max_nodes = self.Database.GetJobMaxId() + 1
                         self.max_history = self.Database.GetJobHistoryMaxId() + 1
-                        self.NodeDBAddition(
+                        self.node_db_addition(
                             self.max_nodes, cur_dropped_id, cur_dropped_node, shot_id
                         )
-                        self.NodeDBHistoryAddition(
+                        self.node_db_history_addition(
                             self.max_history, cur_dropped_id, cur_dropped_node
                         )
 
@@ -1520,8 +1562,8 @@ class ProjectTabs(QtWidgets.QWidget):
                     pass
 
             else:
-                self.NodeDBAddition(1, cur_dropped_id, cur_dropped_node, shot_id)
-                self.NodeDBHistoryAddition(1, cur_dropped_id, cur_dropped_node)
+                self.node_db_addition(1, cur_dropped_id, cur_dropped_node, shot_id)
+                self.node_db_history_addition(1, cur_dropped_id, cur_dropped_node)
         else:
             print("The Node doesn't need to be stored in the DB")
             pass
@@ -1530,7 +1572,7 @@ class ProjectTabs(QtWidgets.QWidget):
     Node Per Shot Drop Handling
     """
 
-    def NodeDBAddition(self, node_id, cur_dropped_id, cur_dropped_node, shot_id):
+    def node_db_addition(self, node_id, cur_dropped_id, cur_dropped_node, shot_id):
         print(f"Max Nodes AFTER Dropping: {node_id}")
 
         nodes_tuple = (
@@ -1546,7 +1588,7 @@ class ProjectTabs(QtWidgets.QWidget):
     Node ID And Information History Handling
     """
 
-    def NodeDBHistoryAddition(self, history_id, node_uuid, cur_dropped_node):
+    def node_db_history_addition(self, history_id, node_uuid, cur_dropped_node):
         node_history_tuple = (
             history_id,
             node_uuid,
@@ -1558,13 +1600,13 @@ class ProjectTabs(QtWidgets.QWidget):
         )
         self.Database.InsertJobHistoryDB(node_history_tuple)
 
-    def CompareTupleInList(self, res: tuple, trgt_list: list):
+    def compare_tuple_in_list(self, res: tuple, trgt_list: list):
         for tup in trgt_list:
             if tup[0] == res[0] and tup[1] == res[1]:
                 return False
         return True
 
-    def RetrieveNodesFromDB(self, shot_id):
+    def retrieve_nodes_from_db(self, shot_id):
         nodes_list = self.Database.FetchAllJobsByShot(shot_id)
         return nodes_list
 
@@ -1572,21 +1614,21 @@ class ProjectTabs(QtWidgets.QWidget):
     Property Tab Creation Methods
     """
 
-    def CreatePropertyTab(self, node_type):
+    def create_property_tab(self, node_type):
         if node_type == "unknown":
             submission_tab = QtWidgets.QWidget()
             pass
         else:
             submission_tab = QtWidgets.QWidget()
-            sub_tab = self.SubmissionTab(node_type)
+            sub_tab = self.submission_tab(node_type)
             submission_tab.setLayout(sub_tab)
             # self.tab_container.addTab(self.submission_tab, "SUBMISSION PROPERTIES")
             # self.submission_tab.setHidden(True)
 
         return submission_tab
 
-    def MakePropsTabVisible(self):
-        cur_shot_nodes_info = self.PreShotDrop(self.ProjectDataInfo)[1]
+    def make_props_tab_visible(self):
+        cur_shot_nodes_info = self.pre_shot_drop(self.ProjectDataInfo)[1]
         ordered_dwList = OrderedDict(self.DroppedWidgetList.items())
         print("These are DroppedWidgetList Items: ", ordered_dwList)
 
@@ -1610,7 +1652,7 @@ class ProjectTabs(QtWidgets.QWidget):
                 print(ke)
                 raise
 
-    def SubmissionTab(self, node_type):
+    def submission_tab(self, node_type):
 
         left = QtCore.Qt.AlignLeft
         right = QtCore.Qt.AlignRight
@@ -1712,7 +1754,7 @@ class ProjectTabs(QtWidgets.QWidget):
 
             return self.formbox
 
-    def InitiateSpoolAndSend(self, SubmissionObj, nodelist):
+    def initiate_spool_and_send(self, SubmissionObj, nodelist):
         ######## INITIATE SUBMISSION CLASS FEEDING IN ALL PARAMETERS #########
         Submission = HoudiniSubmissionMethods(
             self.blades,

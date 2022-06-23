@@ -170,7 +170,7 @@ class BooleanMethods:
     @staticmethod
     def TreeSelectionBool(widget, widget_class):
         # childnum = self.projectlist.indexFromItem(parent)
-        # list_of_children = self.ShotArray[self.SequenceIndex()][parent]
+        # list_of_children = self.ShotArray[self.sequence_index()][parent]
         # try:
         #     for i in range(parent.childCount()):
         #         return parent.child(i)
